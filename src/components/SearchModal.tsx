@@ -1,5 +1,5 @@
 import { Box, Flex, Input, Text } from '@mantine/core';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../providers/useAuth';
 import type { User } from '../scripts/types/types';
 import AddConvFriend from './AddConvFriend';

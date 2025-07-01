@@ -19,11 +19,9 @@ const AddConvFriend = ({
         if (addUser) {
             setUserList(prev => [...prev, addUser]);
             setAddUser(null);
-            // if (setUserList) {
-            //     setUserList(prev =>
-            //         prev.filter(user => user.id !== addUser.id)
-            //     );
-            // }
+            if (setUserList) {
+                setUserList(prev => [...prev, { id: `${id}`, name, email }]);
+            }
         } else {
             setAddUser({ id: `${id}`, name, email });
         }
