@@ -10,6 +10,7 @@ import {
 import { useState } from 'react';
 import type { MessageProps } from '../scripts/types/types';
 import { useConversation } from './conversations/useConversation';
+import MorseText from './morse/MorseText';
 
 const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
     const { handleUpdateMessage, handleDeleteMessage } = useConversation();
@@ -100,9 +101,9 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
                         align={!isCurrentUser ? 'flex-start' : 'flex-end'}
                     >
                         {lastUserId === message.user.id && (
-                            <Text size="xs" c="gray">
+                            <MorseText size="xs" c="gray">
                                 {message.user.name || message.user.email}
-                            </Text>
+                            </MorseText>
                         )}
                         <Card
                             p={'xs'}
@@ -112,14 +113,14 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
                             shadow="sm"
                             bg={isCurrentUser ? 'gray.5' : 'dark'}
                         >
-                            <Text
+                            <MorseText
                                 style={{
                                     wordBreak: 'break-word',
                                     whiteSpace: 'pre-wrap',
                                 }}
                             >
                                 {message.content}
-                            </Text>
+                            </MorseText>
                         </Card>
                     </Flex>
                 </Menu.Target>
@@ -128,7 +129,7 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
                         leftSection={<IconCopy />}
                         onClick={handleCopyMessage}
                     >
-                        Copy
+                        <MorseText>Copy</MorseText>
                     </Menu.Item>
                     <Menu.Item
                         leftSection={<IconEdit />}
@@ -137,14 +138,14 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
                             setEditedMessage(message.content);
                         }}
                     >
-                        Edit
+                        <MorseText>Edit</MorseText>
                     </Menu.Item>
                     <Menu.Item
                         color="red"
                         leftSection={<IconTrash />}
                         onClick={handleDeleteClick}
                     >
-                        Delete
+                        <MorseText>Delete</MorseText>
                     </Menu.Item>
                 </Menu.Dropdown>
             </Menu>

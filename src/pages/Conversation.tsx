@@ -6,6 +6,7 @@ import { useParams } from 'react-router';
 import { useConversation } from '../components/conversations/useConversation';
 import Message from '../components/Message';
 import { useAuth } from '../providers/useAuth';
+import useMorse from '../hook/useMorse';
 
 const Conversation = () => {
     const params = useParams();
@@ -40,7 +41,7 @@ const Conversation = () => {
         ) {
             viewport.current.scrollTo({
                 top: viewport.current.scrollHeight,
-                behavior: 'smooth',
+                behavior: 'instant',
             });
         }
     }, [
@@ -60,6 +61,8 @@ const Conversation = () => {
 
         setField({ value: '', error: '' });
     };
+
+    const { handleRender } = useMorse();
 
     return (
         <>
@@ -96,7 +99,9 @@ const Conversation = () => {
                 <Box p={'xs'}>
                     <form onSubmit={onSubmit}>
                         <TextInput
-                            placeholder="Type your message here..."
+                            placeholder={handleRender(
+                                'Type your message here...'
+                            )}
                             value={field.value}
                             onChange={e =>
                                 setField({ value: e.target.value, error: '' })
