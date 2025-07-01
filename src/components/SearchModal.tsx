@@ -1,11 +1,12 @@
 import { Box, Flex, Input, Text } from '@mantine/core';
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../providers/useAuth';
 import type { User } from '../scripts/types/types';
-import AddConvFriend, { UsersList } from './AddConvFriend';
+import AddConvFriend from './AddConvFriend';
 
 const SearchModal = ({ users }: { users: User[] }) => {
-    const [searchUser, setSearchUser] = React.useState('');
+    const [searchUser, setSearchUser] = useState('');
+    const [userList, setUserList] = useState<User[]>([]);
     const { authStore } = useAuth();
     return (
         <Flex direction="column" gap="md">
@@ -15,9 +16,8 @@ const SearchModal = ({ users }: { users: User[] }) => {
                 onChange={e => setSearchUser(e.currentTarget.value)}
             />
             <Box>
-                {UsersList.map(User => (
-                    <Text key={User.id}>{User.name}</Text>
-                )) || 'No users found'}
+                {userList.map(User => <Text key={User.id}>{User.name}</Text>) ||
+                    'No users found'}
             </Box>
             <Flex direction="column" gap="xs">
                 {users
@@ -28,7 +28,11 @@ const SearchModal = ({ users }: { users: User[] }) => {
                             .includes(searchUser.toLowerCase())
                     )
                     .map((user: User) => (
-                        <AddConvFriend {...user} key={user.id} />
+                        <AddConvFriend
+                            setUserList={setUserList}
+                            {...user}
+                            key={user.id}
+                        />
                     ))}
             </Flex>
         </Flex>

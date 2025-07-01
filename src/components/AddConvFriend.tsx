@@ -1,46 +1,33 @@
-import {
-    ActionIcon,
-    Avatar,
-    Box,
-    Card,
-    Flex,
-    Indicator,
-    Paper,
-    Skeleton,
-    Text,
-} from '@mantine/core';
-import { useAuth } from '../providers/useAuth';
+import { ActionIcon, Avatar, Box, Card, Flex, Indicator } from '@mantine/core';
+import { IconPlus } from '@tabler/icons-react';
+import { useState } from 'react';
 import type { User } from '../scripts/types/types';
 import { useConversation } from './conversations/useConversation';
 import MorseText from './morse/MorseText';
-import { IconPlus } from '@tabler/icons-react';
-import { useState } from 'react';
 
-let UsersList: User[] = [];
-
-const AddConvFriend = ({ name, id, email }: User) => {
-    const { authStore } = useAuth();
+const AddConvFriend = ({
+    name,
+    id,
+    email,
+    setUserList,
+}: User & { setUserList: React.Dispatch<React.SetStateAction<User[]>> }) => {
     const { isOnline } = useConversation();
-    const [userList, setUserList] = useState<User[]>(UsersList);
-    const [addUser, setAddUser] = useState<User | null>(null);
 
-    const loginId = authStore?.id;
+    const [addUser, setAddUser] = useState<User | null>(null);
 
     const handleClick = () => {
         if (addUser) {
-            console.log('User already added:', addUser);
-            return;
+            setUserList(prev => [...prev, addUser]);
+            setAddUser(null);
+            // if (setUserList) {
+            //     setUserList(prev =>
+            //         prev.filter(user => user.id !== addUser.id)
+            //     );
+            // }
+        } else {
+            setAddUser({ id: `${id}`, name, email });
         }
-
-        const newUser: User = { id, name, email };
-        userList.push(newUser);
-        setAddUser(newUser);
-
-        console.log('Added user to conversation:', newUser);
     };
-
-    console.log('AddConvFriend', { name, id, email, loginId });
-    console.log('UserList', userList);
 
     return (
         <Card shadow="xs">
