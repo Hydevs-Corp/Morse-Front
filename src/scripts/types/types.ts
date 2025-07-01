@@ -1,8 +1,8 @@
-export type Conversation = {
-    conversationId: string;
-    participants: User[];
-    messages: Message[];
-    lastMessageDate?: number;
+// Core entities
+export type User = {
+    id: string;
+    email: string;
+    name: string;
 };
 
 export type Message = {
@@ -10,20 +10,95 @@ export type Message = {
     id: string;
     conversationId: string;
     user: User;
+    createdAt?: string;
+    updatedAt?: string;
 };
 
-export type User = {
-    id: string;
-    email: string;
-    name: string;
+export type Conversation = {
+    conversationId: string;
+    participants: User[];
+    messages: Message[];
+    lastMessageDate?: number;
+    createdAt?: string;
+    updatedAt?: string;
 };
 
+// Authentication types
 export type AuthModel = User & {
     token?: string;
 };
 
-export interface onlineListItem {
+export type AuthPayload = {
+    token: string;
+    user: User;
+};
+
+// Online status types
+export interface OnlineListItem {
     socketId: string[];
     userId: string;
     lastConnection?: Date;
+}
+
+// GraphQL response types
+export type GetUsersResponse = {
+    users: User[];
+};
+
+export type GetConversationResponse = {
+    conversation: Conversation;
+};
+
+export type GetMyConversationsResponse = {
+    getMyConversations: Conversation[];
+};
+
+export type SendMessageResponse = {
+    sendMessage: Message;
+};
+
+export type UpdateMessageResponse = {
+    updateMessage: Message;
+};
+
+export type DeleteMessageResponse = {
+    deleteMessage: boolean;
+};
+
+export type SigninResponse = {
+    signin: string; // JWT token
+};
+
+export type SignupResponse = {
+    signup: AuthPayload;
+};
+
+export type GetMeResponse = {
+    me: User;
+};
+
+// Settings types
+export interface Settings {
+    language: string;
+    soundEnabled: boolean;
+    volume: number;
+    morsePercent: number;
+}
+
+export type GetConversationsByParticipantResponse = {
+    conversationsByParticipant: { id: string }[];
+};
+
+// JWT token types
+export interface JWTDecoded {
+    sub: number;
+    email: string;
+    iat: number;
+}
+
+// Props types for components
+export interface MessageProps {
+    message: Message;
+    isCurrentUser: boolean;
+    lastUserId?: string | null;
 }

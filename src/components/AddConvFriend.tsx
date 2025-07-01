@@ -16,15 +16,15 @@ const AddConvFriend = ({
     const [addUser, setAddUser] = useState<User | null>(null);
 
     const handleClick = () => {
-        if (addUser) {
-            setUserList(prev => [...prev, addUser]);
-            setAddUser(null);
-            if (setUserList) {
-                setUserList(prev => [...prev, { id: `${id}`, name, email }]);
+        setAddUser({ id: `${id}`, name, email });
+        setUserList(prevUsers => {
+            if (!prevUsers.find(user => user.id === `${id}`)) {
+                return [...prevUsers, { id: `${id}`, name, email }];
             }
-        } else {
-            setAddUser({ id: `${id}`, name, email });
-        }
+            return prevUsers;
+        });
+        addUser &&
+            console.log(`User ${addUser.name} added to the conversation list.`);
     };
 
     return (

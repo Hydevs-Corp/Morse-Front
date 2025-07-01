@@ -1,22 +1,16 @@
 import { gql } from '@apollo/client';
+import { MESSAGE_FRAGMENT } from '../fragments/fragments';
 
 export const SEND_MESSAGE = gql`
     mutation SendMessage($conversationId: Int!, $content: String!) {
         sendMessage(conversationId: $conversationId, content: $content) {
-            id
-            content
-            createdAt
-            updatedAt
-            user {
-                id
-                name
-                email
-            }
+            ...MessageFragment
             conversation {
                 id
             }
         }
     }
+    ${MESSAGE_FRAGMENT}
 `;
 
 export const UPDATE_MESSAGE = gql`

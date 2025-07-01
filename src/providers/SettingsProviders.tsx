@@ -1,29 +1,7 @@
-import React, {
-    createContext,
-    useContext,
-    useState,
-    type ReactNode,
-} from 'react';
-
-interface Settings {
-    language: string;
-    soundEnabled: boolean;
-    volume: number;
-    morsePercent: number;
-}
-
-interface SettingsContextType {
-    settings: Settings;
-    updateSettings: (newSettings: Partial<Settings>) => void;
-    resetSettings: () => void;
-}
-
-const defaultSettings: Settings = {
-    language: 'fr',
-    morsePercent: 1,
-    soundEnabled: true,
-    volume: 0.5,
-};
+import React, { createContext, useState, type ReactNode } from 'react';
+import type { Settings } from '../scripts/types/types';
+import type { SettingsContextType } from './settings.types';
+import { defaultSettings } from './settings.types';
 
 const SettingsContext = createContext<SettingsContextType | undefined>(
     undefined
@@ -60,10 +38,5 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
     );
 };
 
-export const useSettings = (): SettingsContextType => {
-    const context = useContext(SettingsContext);
-    if (context === undefined) {
-        throw new Error('useSettings must be used within a SettingsProvider');
-    }
-    return context;
-};
+// Export the context for use in the hook
+export { SettingsContext };

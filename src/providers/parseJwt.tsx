@@ -1,6 +1,6 @@
-import type { JWTdecoded } from './JWTdecoded';
+import type { JWTDecoded } from '../scripts/types/types';
 
-export function parseJwt(token: string): JWTdecoded {
+export function parseJwt(token: string): JWTDecoded {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const jsonPayload = decodeURIComponent(

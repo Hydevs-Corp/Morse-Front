@@ -1,24 +1,11 @@
 import { gql } from '@apollo/client';
+import { CONVERSATION_FRAGMENT } from '../fragments/fragments';
 
 export const GetConversationById = gql`
     query GetConversationById($conversationId: Int!) {
         conversation(id: $conversationId) {
-            id
-            participants {
-                email
-                id
-                name
-            }
-            messages {
-                id
-                content
-                user {
-                    email
-                    id
-                    name
-                }
-            }
-            lastMessageDate
+            ...ConversationFragment
         }
     }
+    ${CONVERSATION_FRAGMENT}
 `;

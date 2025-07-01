@@ -8,14 +8,8 @@ import {
     IconX,
 } from '@tabler/icons-react';
 import { useState } from 'react';
-import type { Message as MessageType } from '../scripts/types/types';
+import type { MessageProps } from '../scripts/types/types';
 import { useConversation } from './conversations/useConversation';
-
-interface MessageProps {
-    message: MessageType;
-    isCurrentUser: boolean;
-    lastUserId?: string | null;
-}
 
 const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
     const { handleUpdateMessage, handleDeleteMessage } = useConversation();

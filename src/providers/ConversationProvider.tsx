@@ -20,7 +20,7 @@ import {
 import type {
     Conversation,
     Message,
-    onlineListItem,
+    OnlineListItem,
 } from '../scripts/types/types';
 import { ConversationContext } from './ConversationContext';
 import { useAuth } from './useAuth';
@@ -28,7 +28,7 @@ import { useAuth } from './useAuth';
 const ConversationProvider = ({ children }: { children: ReactNode }) => {
     const { authStore } = useAuth();
     const [history, setHistory] = useState<Record<string, Conversation>>({});
-    const [onlineList, setOnlineList] = useState<onlineListItem[]>([]);
+    const [onlineList, setOnlineList] = useState<OnlineListItem[]>([]);
     const [currentConversationId, _setCurrentConversationId] = useState<
         string | null
     >(null);
@@ -77,7 +77,9 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
                 const messageData: Message = {
                     id: message.id,
                     content: message.content,
-                    conversationId: message.conversationId?.toString() || message.conversation?.id?.toString(),
+                    conversationId:
+                        message.conversationId?.toString() ||
+                        message.conversation?.id?.toString(),
                     user: {
                         id: message.user.id.toString(),
                         name: message.user.name || message.user.email,

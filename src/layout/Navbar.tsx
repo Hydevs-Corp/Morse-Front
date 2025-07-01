@@ -26,7 +26,7 @@ import MorseInput from '../components/morse/MorseInput';
 import MorseText from '../components/morse/MorseText';
 import MorseTooltip from '../components/morse/MorseTooltip';
 import { GetMyConversation } from '../graphql/query/getMyConversations';
-import { useSettings } from '../providers/SettingsProviders';
+import { useSettings } from '../providers/useSettings';
 import { useAuth } from '../providers/useAuth';
 
 const Navbar = () => {

@@ -8,24 +8,10 @@ import getMe_QUERY from '../graphql/query/getMe';
 import type { AuthModel } from '../scripts/types/types';
 import { AuthContext } from './AuthContext';
 import { parseJwt } from './parseJwt';
+import type { AuthContextType } from './auth.types';
+import { defaultUserData } from './auth.types';
 
-export interface AuthContextType {
-    authStore: AuthModel;
-    state: {
-        loading: boolean;
-        error: string | null;
-    };
-    signin: (email: string, password: string) => void;
-    signup: (email: string, password: string) => void;
-    logout: () => void;
-}
-
-const defaultUserData: AuthModel = {
-    email: '',
-    name: '',
-    id: '',
-    token: undefined,
-};
+export type { AuthContextType };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [authStore, setAuthStore] = useState<AuthModel>(defaultUserData);

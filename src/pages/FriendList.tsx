@@ -4,16 +4,13 @@ import { IconMessageCirclePlus } from '@tabler/icons-react';
 import FriendProfil from '../components/FriendProfil';
 import getUsers_QUERY from '../graphql/query/getUsers';
 import { useAuth } from '../providers/useAuth';
-import type { User } from '../scripts/types/types';
+import type { GetUsersResponse, User } from '../scripts/types/types';
 import { modals } from '@mantine/modals';
 import SearchModal from '../components/SearchModal';
-interface QueryResult {
-    users: User[];
-}
 
 const FriendList = () => {
     const { authStore } = useAuth();
-    const { loading, error, data } = useQuery<QueryResult>(getUsers_QUERY);
+    const { loading, error, data } = useQuery<GetUsersResponse>(getUsers_QUERY);
     if (authStore?.id === '') {
         return <div>Please log in to see your friends.</div>;
     }

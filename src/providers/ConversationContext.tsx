@@ -2,7 +2,7 @@ import { createContext } from 'react';
 import type {
     Conversation,
     Message,
-    onlineListItem,
+    OnlineListItem,
 } from '../scripts/types/types';
 
 const defaultValue = {
@@ -26,7 +26,7 @@ type ConversationContextType = {
     handleUpdateMessage: (messageId: string, newContent: string) => void;
     handleDeleteMessage: (messageId: string) => void;
     isOnline: (id: string) => boolean;
-    onlineList: onlineListItem[];
+    onlineList: OnlineListItem[];
 };
 
 export const ConversationContext =

@@ -13,9 +13,13 @@ import {
 import { IconMessageCircle } from '@tabler/icons-react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../providers/useAuth';
-import type { User } from '../scripts/types/types';
+import type {
+    User,
+    GetConversationsByParticipantResponse,
+} from '../scripts/types/types';
 import { useConversation } from './conversations/useConversation';
 import MorseText from './morse/MorseText';
+import { CREATE_CONV } from '../graphql/mutation/conversations';
 
 const GET_CONVERSATIONS = gql`
     query ConversationsByParticipant($participantIds: [Int!]!) {
@@ -25,17 +29,6 @@ const GET_CONVERSATIONS = gql`
     }
 `;
 
-const CREATE_CONV = gql`
-    mutation CreateConversation($participantIds: [Int!]!) {
-        createConversation(participantIds: $participantIds) {
-            id
-            participants {
-                id
-                name
-            }
-        }
-    }
-`;
 const FriendProfil = ({ name, id, email }: User) => {
     const { authStore } = useAuth();
     const n = useNavigate();
@@ -44,9 +37,7 @@ const FriendProfil = ({ name, id, email }: User) => {
         loading: conversationLoading,
         error: conversationError,
         data: conversationData,
-    } = useQuery<{
-        conversationsByParticipant: { id: string }[];
-    }>(GET_CONVERSATIONS, {
+    } = useQuery<GetConversationsByParticipantResponse>(GET_CONVERSATIONS, {
         variables: {
             participantIds: [parseInt(authStore?.id), parseInt(id)],
         },

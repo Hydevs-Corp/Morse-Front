@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useSettings } from '../providers/SettingsProviders';
+import { useSettings } from '../providers/useSettings';
 
 const morseTable = [
     { char: 'A', code: '.-' },
@@ -47,6 +47,16 @@ const morseTable = [
 
 const textToMorse = (text: string) =>
     text
+        .replace('é', 'e')
+        .replace('è', 'e')
+        .replace('ê', 'e')
+        .replace('à', 'a')
+        .replace('ç', 'c')
+        .replace('ô', 'o')
+        .replace('ù', 'u')
+        .replace('î', 'i')
+        .replace('ï', 'i')
+        .replace('ô', 'o')
         .split('')
         .map(char => {
             const entry = morseTable.find(
