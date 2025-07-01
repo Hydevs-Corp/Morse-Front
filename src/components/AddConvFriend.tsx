@@ -16,11 +16,12 @@ import MorseText from './morse/MorseText';
 import { IconPlus } from '@tabler/icons-react';
 import { useState } from 'react';
 
-export let UsersList: User[] = [];
+let UsersList: User[] = [];
 
 const AddConvFriend = ({ name, id, email }: User) => {
     const { authStore } = useAuth();
     const { isOnline } = useConversation();
+    const [userList, setUserList] = useState<User[]>(UsersList);
     const [addUser, setAddUser] = useState<User | null>(null);
 
     const loginId = authStore?.id;
@@ -32,14 +33,14 @@ const AddConvFriend = ({ name, id, email }: User) => {
         }
 
         const newUser: User = { id, name, email };
-        UsersList.push(newUser);
+        userList.push(newUser);
         setAddUser(newUser);
 
         console.log('Added user to conversation:', newUser);
     };
 
     console.log('AddConvFriend', { name, id, email, loginId });
-    console.log('UserList', UsersList);
+    console.log('UserList', userList);
 
     return (
         <Card shadow="xs">
