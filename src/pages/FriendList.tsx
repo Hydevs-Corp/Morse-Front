@@ -7,10 +7,18 @@ import { useAuth } from '../providers/useAuth';
 import type { GetUsersResponse, User } from '../scripts/types/types';
 import { modals } from '@mantine/modals';
 import SearchModal from '../components/SearchModal';
+import { useEffect } from 'react';
 
 const FriendList = () => {
     const { authStore } = useAuth();
-    const { loading, error, data } = useQuery<GetUsersResponse>(getUsers_QUERY);
+    const { loading, error, data, refetch } =
+        useQuery<GetUsersResponse>(getUsers_QUERY);
+    useEffect(() => {
+        if (authStore?.id) {
+            refetch();
+        }
+    }, [authStore?.id, refetch]);
+
     if (authStore?.id === '') {
         return <div>Please log in to see your friends.</div>;
     }

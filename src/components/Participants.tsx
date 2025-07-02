@@ -1,7 +1,7 @@
 import { Avatar, Box, Flex, Text } from '@mantine/core';
 import { useAuth } from '../providers/useAuth';
 import { useConversation } from './conversations/useConversation';
-import FriendProfil from './FriendProfil';
+import ConvProfil from './ConvProfil';
 
 const Participants = () => {
     const { history, currentConversationId } = useConversation();
@@ -25,8 +25,10 @@ const Participants = () => {
                             align="flex-start"
                             direction="column"
                             wrap="wrap"
+                            gap={'md'}
+                            mb={'md'}
                         >
-                            <FriendProfil
+                            <ConvProfil
                                 name={participant.name}
                                 id={participant.id}
                                 email={participant.email}

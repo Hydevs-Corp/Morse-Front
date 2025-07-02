@@ -48,3 +48,38 @@ jobs:
                   labels: ${{ steps.meta.outputs.labels }}
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
+
+    pull-image-and-deploy:
+        runs-on: self-hosted
+
+        needs: build-and-push
+
+        steps:
+            # Étape 1: Déployer sur le serveur distant via SSH
+            - name: Deploy to remote server
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ secrets.VPS_HOST }}
+                  username: ${{ secrets.VPS_USERNAME }}
+                  key: ${{ secrets.VPS_PRIVATE_KEY }}
+                  script: |
+                      # Tirer l'image Docker
+                      docker pull angysquirrel/morse-front:latest
+
+                      # Arrêter et supprimer le conteneur existant
+                      docker stop morse-front || true
+                      docker rm morse-front || true
+
+                      # Déployer la nouvelle image
+                      docker run -d --name morse-front -p 80:80 angysquirrel/morse-front:latest
+
+                      # Afficher les logs du conteneur
+                      docker logs morse-front
+
+                      # Vérifier l'état du conteneur
+                      if [ "$(docker ps -q -f name=morse-front)" ]; then
+                          echo "Container is running successfully."
+                      else
+                          echo "Container failed to start."
+                          exit 1
+                      fi

@@ -68,7 +68,6 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
         },
     });
 
-    // Subscriptions
     useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
         variables: { userId: parseInt(authStore.id || '0') },
         onData: ({ data }) => {
@@ -119,7 +118,7 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
                     (user: { userId: string; lastConnection: string }) => ({
                         userId: user.userId,
                         lastConnection: new Date(user.lastConnection),
-                        socketId: [], // For compatibility
+                        socketId: [],
                     })
                 );
                 setOnlineList(onlineUsers);
@@ -294,13 +293,11 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
         return isOnline;
     };
 
-    // Set user online when component mounts and user is authenticated
     useEffect(() => {
         if (authStore.id) {
             setUserOnline();
         }
 
-        // Set user offline when component unmounts
         return () => {
             if (authStore.id) {
                 setUserOffline();

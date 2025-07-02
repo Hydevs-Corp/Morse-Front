@@ -17,7 +17,6 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
     const [settings, setSettings] = useState<Settings>(defaultSettings);
 
     const updateSettings = (newSettings: Partial<Settings>) => {
-        // console.log('Updating settings:', { newSettings, settings });
         setSettings(prev => ({ ...prev, ...newSettings }));
     };
 
@@ -38,5 +37,4 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({
     );
 };
 
-// Export the context for use in the hook
 export { SettingsContext };

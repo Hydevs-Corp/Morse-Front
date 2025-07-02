@@ -1,4 +1,3 @@
-// Core entities
 export type User = {
     id: string;
     email: string;
@@ -23,7 +22,6 @@ export type Conversation = {
     updatedAt?: string;
 };
 
-// Authentication types
 export type AuthModel = User & {
     token?: string;
 };
@@ -33,14 +31,12 @@ export type AuthPayload = {
     user: User;
 };
 
-// Online status types
 export interface OnlineListItem {
     socketId: string[];
     userId: string;
     lastConnection?: Date;
 }
 
-// GraphQL response types
 export type GetUsersResponse = {
     users: User[];
 };
@@ -66,7 +62,7 @@ export type DeleteMessageResponse = {
 };
 
 export type SigninResponse = {
-    signin: string; // JWT token
+    signin: string;
 };
 
 export type SignupResponse = {
@@ -77,7 +73,6 @@ export type GetMeResponse = {
     me: User;
 };
 
-// Settings types
 export interface Settings {
     language: string;
     soundEnabled: boolean;
@@ -89,14 +84,12 @@ export type GetConversationsByParticipantResponse = {
     conversationsByParticipant: { id: string }[];
 };
 
-// JWT token types
 export interface JWTDecoded {
     sub: number;
     email: string;
     iat: number;
 }
 
-// Props types for components
 export interface MessageProps {
     message: Message;
     isCurrentUser: boolean;

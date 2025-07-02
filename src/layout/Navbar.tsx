@@ -10,6 +10,7 @@ import {
     NavLink,
     Popover,
     Slider,
+    Text,
     Tooltip,
 } from '@mantine/core';
 import {
@@ -122,12 +123,12 @@ const Navbar = () => {
                                     >
                                         <Avatar />
                                         <MorseText>{authStore.name}</MorseText>
+                                        <Text c={'grey'}>#{authStore.id}</Text>
                                     </Flex>
                                     <Tooltip
                                         transitionProps={{ duration: 200 }}
                                         label="Logout"
                                         color="red"
-                                        variant="light"
                                     >
                                         <ActionIcon
                                             variant="primary"
