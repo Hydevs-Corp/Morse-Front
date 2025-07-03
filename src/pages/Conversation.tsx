@@ -18,12 +18,10 @@ const Conversation = () => {
         handleSendMessage,
     } = useConversation();
     useEffect(() => {
-        console.log('pram', params.id);
         if (params.id) {
             setCurrentConversationId(params.id);
         }
         return () => {
-            console.log('Unmounting Conversation component');
             setCurrentConversationId(null);
         };
     }, [params.id, setCurrentConversationId]);

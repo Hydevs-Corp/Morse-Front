@@ -23,6 +23,7 @@ import { AuthProvider } from './providers/AuthProvider.tsx';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';
+import Documentation from './components/Documentation.tsx';
 const customTheme = createTheme({
     defaultRadius: '0.5rem',
     white: '#f5f1e6',
@@ -94,12 +95,12 @@ const customTheme = createTheme({
 });
 
 const httpLink = createHttpLink({
-    uri: `${window.location.origin.replace(':5173', '')}:3001/graphql`,
+    uri: `${import.meta.env.VITE_API_URL}/graphql`,
 });
 
 const wsLink = new GraphQLWsLink(
     createClient({
-        url: 'ws://localhost:3001/graphql',
+        url: `${import.meta.env.VITE_API_URL?.replace('http', 'ws')}/graphql`,
         connectionParams: () => {
             const token = localStorage.getItem('token');
             return {
@@ -149,6 +150,10 @@ const router = createBrowserRouter([
             {
                 path: '/',
                 element: <FriendList />,
+            },
+            {
+                path: '/doc',
+                element: <Documentation />,
             },
         ],
     },

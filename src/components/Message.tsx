@@ -5,12 +5,15 @@ import {
     IconCopy,
     IconEdit,
     IconTrash,
+    IconVolume,
     IconX,
 } from '@tabler/icons-react';
 import { useState } from 'react';
 import type { MessageProps } from '../scripts/types/types';
 import { useConversation } from './conversations/useConversation';
 import MorseText from './morse/MorseText';
+import morse from '@ozdemirburak/morse-code-translator';
+import { useSettings } from '../providers/useSettings';
 
 const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
     const { handleUpdateMessage, handleDeleteMessage } = useConversation();
@@ -19,6 +22,22 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
     };
     const [isEditMode, setIsEditMode] = useState(false);
     const [editedMessage, setEditedMessage] = useState(message.content);
+    const { settings } = useSettings();
+
+    const handleGenerateAudio = () => {
+        // console.log('Volume : ', settings.volume);
+        if (settings.volume <= 0) return console.log('Sound is disabled');
+        morse
+            .audio(message.content, {
+                wpm: 18,
+                volume: settings.volume,
+                oscillator: {
+                    type: 'triangle', // sine, square, sawtooth, triangle
+                    frequency: 800, // value in hertz
+                },
+            })
+            .play();
+    };
 
     const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         if (e.shiftKey) {
@@ -94,17 +113,34 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
                 shadow="md"
                 position="left"
             >
-                <Menu.Target>
-                    <Flex
-                        maw={'70%'}
-                        direction={'column'}
-                        align={!isCurrentUser ? 'flex-start' : 'flex-end'}
-                    >
-                        {lastUserId === message.user.id && (
+                <Flex
+                    maw={'70%'}
+                    direction={'column'}
+                    align={!isCurrentUser ? 'flex-start' : 'flex-end'}
+                    gap={4}
+                >
+                    {lastUserId === message.user.id && (
+                        <Flex justify={'center'} align={'center'} gap={4}>
                             <MorseText size="xs" c="gray">
                                 {message.user.name || message.user.email}
                             </MorseText>
-                        )}
+                            <ActionIcon
+                                variant="light"
+                                color="grape"
+                                w={8}
+                                h={8}
+                                p={0}
+                                onClick={handleGenerateAudio}
+                            >
+                                <IconVolume
+                                    // color="purple"
+                                    width={16}
+                                    height={16}
+                                />
+                            </ActionIcon>
+                        </Flex>
+                    )}
+                    <Menu.Target>
                         <Card
                             p={'xs'}
                             w={'fit-content'}
@@ -122,8 +158,8 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
                                 {message.content}
                             </MorseText>
                         </Card>
-                    </Flex>
-                </Menu.Target>
+                    </Menu.Target>
+                </Flex>
                 <Menu.Dropdown>
                     <Menu.Item
                         leftSection={<IconCopy />}

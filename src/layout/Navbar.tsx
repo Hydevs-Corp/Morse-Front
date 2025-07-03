@@ -1,4 +1,3 @@
-import { useQuery } from '@apollo/client';
 import {
     ActionIcon,
     Avatar,
@@ -6,6 +5,7 @@ import {
     Button,
     Card,
     Divider,
+    FileInput,
     Flex,
     NavLink,
     Popover,
@@ -24,24 +24,51 @@ import { useState } from 'react';
 import { NavLink as RouterNavLink } from 'react-router';
 import ButtonLogin from '../components/auth/ButtonLogin';
 import ButtonRegister from '../components/auth/ButtonRegister';
+import { useConversation } from '../components/conversations/useConversation';
 import MorseInput from '../components/morse/MorseInput';
 import MorseText from '../components/morse/MorseText';
 import MorseTooltip from '../components/morse/MorseTooltip';
-import { GetMyConversation } from '../graphql/query/getMyConversations';
+import useConversationName from '../hook/UseConversationName';
 import { useAuth } from '../providers/useAuth';
 import { useSettings } from '../providers/useSettings';
+
+const objectKeys = Object.keys as <T extends object>(obj: T) => (keyof T)[];
 
 const Navbar = () => {
     const { authStore, logout, updateUser, state } = useAuth();
     const { settings, updateSettings } = useSettings();
-    const { data } = useQuery(GetMyConversation);
     const [modifyUser, setModifyUser] = useState(false);
+    const { history } = useConversation();
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+
+    const getConversationName = useConversationName();
 
     const form = useForm({
         initialValues: {
             name: authStore.name,
+            avatar: authStore.avatar || '',
         },
     });
+
+    const handleFileChange = (file: File | null) => {
+        setAvatarFile(file);
+    };
+
+    const handleUpdateAvatar = () => {
+        if (avatarFile) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result;
+                if (typeof base64String !== 'string') {
+                    console.error('FileReader did not return a string');
+                    return;
+                }
+                updateUser(form.values.name, base64String);
+                setModifyUser(false);
+            };
+            reader.readAsDataURL(avatarFile);
+        }
+    };
 
     return (
         <Flex
@@ -76,35 +103,18 @@ const Navbar = () => {
                         </Button>
                     </Flex>
                 )}
-                {data?.getMyConversations.map(
-                    (conversation: {
-                        id: string;
-                        participants: { name: string; email: string }[];
-                    }) => (
-                        <NavLink
-                            key={conversation.id}
-                            component={RouterNavLink}
-                            to={`/${conversation.id}`}
-                            label={
-                                <MorseText>
-                                    {conversation.participants
-                                        .filter(
-                                            participant =>
-                                                authStore.email !==
-                                                participant.email
-                                        )
-                                        .reduce(
-                                            (acc, curr) =>
-                                                !acc
-                                                    ? curr.name
-                                                    : (acc += ', ' + curr.name),
-                                            ''
-                                        ) ?? 'Conversation'}
-                                </MorseText>
-                            }
-                        />
-                    )
-                )}
+                {objectKeys(history).map(conversationId => (
+                    <NavLink
+                        key={conversationId}
+                        component={RouterNavLink}
+                        to={`/${conversationId}`}
+                        label={
+                            <MorseText>
+                                {getConversationName(conversationId)}
+                            </MorseText>
+                        }
+                    />
+                ))}
             </Flex>
             <Box w={'100%'}>
                 {authStore?.token && (
@@ -122,7 +132,9 @@ const Navbar = () => {
                                         align="center"
                                         gap={8}
                                     >
-                                        <Avatar />
+                                        <Flex>
+                                            <Avatar src={form.values.avatar} />
+                                        </Flex>
                                         <MorseText>{authStore.name}</MorseText>
                                         <Text c={'grey'}>#{authStore.id}</Text>
                                     </Flex>
@@ -160,21 +172,7 @@ const Navbar = () => {
                                                     loading={
                                                         state.updateUser.loading
                                                     }
-                                                    onClick={() => {
-                                                        if (
-                                                            form.values.name ===
-                                                            authStore.name
-                                                        ) {
-                                                            setModifyUser(
-                                                                false
-                                                            );
-                                                            return;
-                                                        }
-                                                        updateUser(
-                                                            form.values.name
-                                                        );
-                                                        setModifyUser(false);
-                                                    }}
+                                                    onClick={handleUpdateAvatar}
                                                 >
                                                     <IconDeviceFloppy />
                                                 </ActionIcon>
@@ -202,9 +200,15 @@ const Navbar = () => {
                                     <Flex direction={'column'} gap={8}>
                                         <MorseInput
                                             label="Name"
-                                            // defaultValue={authStore.name}
                                             disabled={!modifyUser}
                                             {...form.getInputProps('name')}
+                                        />
+                                        <FileInput
+                                            label="Avatar"
+                                            placeholder="Upload avatar"
+                                            accept="image/*"
+                                            disabled={!modifyUser}
+                                            onChange={handleFileChange}
                                         />
                                         <MorseInput
                                             label="Email"
@@ -254,11 +258,11 @@ const Navbar = () => {
                                                 max={100}
                                                 step={5}
                                                 defaultValue={
-                                                    settings.volume * 100 || 0
+                                                    settings.volume || 0
                                                 }
                                                 onChange={value => {
                                                     updateSettings({
-                                                        volume: value / 100,
+                                                        volume: value,
                                                     });
                                                 }}
                                             />

@@ -33,6 +33,7 @@ const Participants = () => {
                                 name={participant.name}
                                 id={participant.id}
                                 email={participant.email}
+                                avatar={participant.avatar}
                             />
                         </Flex>
                     </Box>

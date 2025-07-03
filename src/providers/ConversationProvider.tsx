@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import MorseText from '../components/morse/MorseText';
 import { GetConversationById } from '../graphql/query/getConversation';
+import { GetMyConversation } from '../graphql/query/getMyConversations';
 import { GET_ONLINE_USERS } from '../graphql/query/getOnlineUsers';
 import {
     SEND_MESSAGE,
@@ -22,6 +23,7 @@ import type {
     Conversation,
     Message,
     OnlineListItem,
+    User,
 } from '../scripts/types/types';
 import { ConversationContext } from './ConversationContext';
 import { useAuth } from './useAuth';
@@ -69,10 +71,8 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
         },
     });
 
-    // Query to get initial online users list
     useQuery(GET_ONLINE_USERS, {
         onCompleted: data => {
-            console.log('Initial online users data received:', data);
             if (data.getOnlineUsers?.online) {
                 const onlineUsers = data.getOnlineUsers.online.map(
                     (user: { userId: string; lastConnection: string }) => ({
@@ -81,7 +81,6 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
                         socketId: [],
                     })
                 );
-                console.log('Setting initial online users:', onlineUsers);
                 setOnlineList(onlineUsers);
             }
         },
@@ -89,7 +88,50 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
             console.error('Error fetching online users:', error);
         },
         skip: !authStore.id,
-        fetchPolicy: 'cache-and-network', // Ensure we always get fresh data
+        fetchPolicy: 'cache-and-network',
+    });
+
+    // Fetch initial conversations list
+    useQuery(GetMyConversation, {
+        onCompleted: data => {
+            if (data.getMyConversations) {
+                const conversations = data.getMyConversations;
+                const conversationHistory: Record<string, Conversation> = {};
+
+                conversations.forEach(
+                    (conversation: {
+                        id: string;
+                        name?: string;
+                        participants: User[];
+                        messages: Message[];
+                        lastMessageDate?: string;
+                        createdAt?: string;
+                        updatedAt?: string;
+                    }) => {
+                        conversationHistory[conversation.id] = {
+                            conversationId: conversation.id,
+                            name: conversation.name,
+                            participants: conversation.participants,
+                            messages: conversation.messages || [],
+                            lastMessageDate: conversation.lastMessageDate
+                                ? new Date(
+                                      conversation.lastMessageDate
+                                  ).getTime()
+                                : undefined,
+                            createdAt: conversation.createdAt,
+                            updatedAt: conversation.updatedAt,
+                        };
+                    }
+                );
+
+                setHistory(conversationHistory);
+            }
+        },
+        onError: error => {
+            console.error('Error fetching conversations:', error);
+        },
+        skip: !authStore.id,
+        fetchPolicy: 'cache-and-network',
     });
 
     useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
@@ -137,7 +179,6 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
 
     useSubscription(ONLINE_USERS_SUBSCRIPTION, {
         onData: ({ data }) => {
-            console.log('Online users subscription data received:', data);
             if (data.data?.onlineUsersUpdated) {
                 const onlineUsers = data.data.onlineUsersUpdated.online.map(
                     (user: { userId: string; lastConnection: string }) => ({
@@ -145,10 +186,6 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
                         lastConnection: new Date(user.lastConnection),
                         socketId: [],
                     })
-                );
-                console.log(
-                    'Updating online users from subscription:',
-                    onlineUsers
                 );
                 setOnlineList(onlineUsers);
             }
@@ -185,10 +222,10 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
                         lastMessageDate: undefined,
                     },
                 }));
+                refetch({
+                    conversationId: parseInt(id || '0'),
+                });
             }
-            refetch({
-                conversationId: parseInt(id || '0'),
-            });
         },
         [history, refetch]
     );
@@ -365,11 +402,6 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
             }
         };
     }, [authStore.id, setUserOnline, setUserOffline]);
-
-    // Debug effect to track online list changes
-    useEffect(() => {
-        console.log('Online list updated:', onlineList);
-    }, [onlineList]);
 
     return (
         <ConversationContext.Provider

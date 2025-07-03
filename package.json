@@ -17,6 +17,7 @@
         "@mantine/hooks": "^8.1.1",
         "@mantine/modals": "^8.1.1",
         "@mantine/notifications": "^8.1.1",
+        "@ozdemirburak/morse-code-translator": "^5.0.4",
         "@tabler/icons-react": "^3.34.0",
         "graphql": "^16.11.0",
         "graphql-ws": "^6.0.5",

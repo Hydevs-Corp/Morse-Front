@@ -2,6 +2,7 @@ export type User = {
     id: string;
     email: string;
     name: string;
+    avatar?: string;
 };
 
 export type Message = {
@@ -89,6 +90,7 @@ export interface JWTDecoded {
     sub: number;
     email: string;
     iat: number;
+    avatar: string;
 }
 
 export interface MessageProps {
@@ -96,3 +98,7 @@ export interface MessageProps {
     isCurrentUser: boolean;
     lastUserId?: string | null;
 }
+
+export type conversationName = {
+    conversationName: string;
+};

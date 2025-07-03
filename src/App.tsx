@@ -1,5 +1,14 @@
-import { AppShell, Card, Flex, Title } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import {
+    ActionIcon,
+    Affix,
+    AppShell,
+    Button,
+    Card,
+    Drawer,
+    Flex,
+    Title,
+} from '@mantine/core';
+import { useDisclosure, useViewportSize } from '@mantine/hooks';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
 import { Outlet, useParams } from 'react-router';
@@ -12,11 +21,15 @@ import ConversationProvider from './providers/ConversationProvider';
 import { SettingsProvider } from './providers/SettingsProviders';
 import { useAuth } from './providers/useAuth';
 import Header from './layout/Header';
+import Documentation from './components/Documentation';
+import { IconFile } from '@tabler/icons-react';
 
 function App() {
     const [opened] = useDisclosure();
+    const [openedDrawer, drawerHandlers] = useDisclosure(false);
     const { authStore } = useAuth();
     const params = useParams();
+    const { width } = useViewportSize();
 
     return (
         <>
@@ -85,6 +98,30 @@ function App() {
                                     }}
                                 >
                                     <Outlet />
+                                    <Affix
+                                        position={{
+                                            bottom: width > 991 ? 10 : 60,
+                                            right: 20,
+                                        }}
+                                    >
+                                        <ActionIcon
+                                            onClick={() =>
+                                                drawerHandlers.open()
+                                            }
+                                        >
+                                            <IconFile />
+                                        </ActionIcon>
+                                    </Affix>
+                                    <Drawer
+                                        opened={openedDrawer}
+                                        onClose={() => drawerHandlers.close()}
+                                        title="Documentation"
+                                        size={800}
+                                        position="right"
+                                        zIndex={1000}
+                                    >
+                                        <Documentation />
+                                    </Drawer>
                                 </AppShell.Main>
                                 {params.id && (
                                     <AppShell.Aside p="md">

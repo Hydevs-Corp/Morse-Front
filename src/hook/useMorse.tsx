@@ -81,6 +81,12 @@ const morseToText = (morse: string) => {
         .join(' ');
 };
 
+function isEmoji(char: string) {
+    return /\p{Emoji}/u.test(char);
+}
+
+console.log('🎵🌙', isEmoji('🌙'), isEmoji('🎵'));
+
 export default function useMorse() {
     const { settings } = useSettings();
 

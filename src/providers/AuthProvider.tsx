@@ -42,6 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 token: tokenJWT,
                 id: payload.sub.toString(),
                 name: payload.email.split('@')[0],
+                avatar : payload.avatar,
             });
             console.log('Parsed JWT payload:', payload);
             localStorage.setItem('token', tokenJWT);
@@ -68,6 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 token: res?.data?.signup?.token || '',
                 id: res?.data?.signup?.user?.id || -1,
                 name: res?.data?.signup?.user?.name || '',
+                avatar: res?.data?.signup?.user?.avatar || ''
             });
 
             localStorage.setItem('token', res?.data?.login || '');
@@ -107,6 +109,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     token,
                     id: refetchedValues?.data?.me?.id,
                     name: refetchedValues?.data?.me?.name || '',
+                    avatar: refetchedValues?.data?.me?.avatar || '',
                 });
             } catch (error) {
                 console.error('Silent login error:', error);

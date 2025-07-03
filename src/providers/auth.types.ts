@@ -10,7 +10,7 @@ export interface AuthContextType {
             error: string | null;
         };
     };
-    updateUser: (name: string) => void;
+    updateUser: (name: string, avatar: string) => void;
     signin: (email: string, password: string) => void;
     signup: (email: string, password: string) => void;
     logout: () => void;

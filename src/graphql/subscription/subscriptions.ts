@@ -14,6 +14,7 @@ export const MESSAGE_ADDED_SUBSCRIPTION = gql`
             }
             conversation {
                 id
+                name
             }
         }
     }
