@@ -1,30 +1,33 @@
-import { ActionIcon, Avatar, Box, Card, Flex, Indicator } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
-import { useState } from 'react';
+import {
+    ActionIcon,
+    Avatar,
+    Box,
+    Card,
+    Flex,
+    Indicator,
+    type MantineColor,
+} from '@mantine/core';
+import type { ReactNode } from 'react';
 import type { User } from '../scripts/types/types';
 import { useConversation } from './conversations/useConversation';
 import MorseText from './morse/MorseText';
 
-const AddConvFriend = ({
+const ConvFriend = ({
     name,
     id,
     email,
-    setUserList,
-}: User & { setUserList: React.Dispatch<React.SetStateAction<User[]>> }) => {
+    icon,
+    action,
+    actionColor,
+}: User & {
+    action: (user: User) => void;
+    icon: ReactNode;
+    actionColor?: MantineColor;
+}) => {
     const { isOnline } = useConversation();
 
-    const [addUser, setAddUser] = useState<User | null>(null);
-
     const handleClick = () => {
-        setAddUser({ id: `${id}`, name, email });
-        setUserList(prevUsers => {
-            if (!prevUsers.find(user => user.id === `${id}`)) {
-                return [...prevUsers, { id: `${id}`, name, email }];
-            }
-            return prevUsers;
-        });
-        addUser &&
-            console.log(`User ${addUser.name} added to the conversation list.`);
+        action({ name, id, email });
     };
 
     return (
@@ -76,12 +79,11 @@ const AddConvFriend = ({
                         wrap="wrap"
                     >
                         <ActionIcon
-                            variant="primary"
-                            size="xl"
-                            aria-label="action icon"
+                            size={'xl'}
+                            color={actionColor}
                             onClick={handleClick}
                         >
-                            <IconPlus />
+                            {icon}
                         </ActionIcon>
                     </Flex>
                 </Box>
@@ -90,4 +92,4 @@ const AddConvFriend = ({
     );
 };
 
-export default AddConvFriend;
+export default ConvFriend;

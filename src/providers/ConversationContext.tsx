@@ -9,6 +9,7 @@ const defaultValue = {
     history: {},
     currentConversationId: null,
     setCurrentConversationId: () => {},
+    setConversationName: () => {},
     handleSendMessage: () => {},
     handleReceiveMessage: () => {},
     handleUpdateMessage: () => {},
@@ -21,6 +22,7 @@ type ConversationContextType = {
     history: Record<string, Conversation>;
     currentConversationId: string | null;
     setCurrentConversationId: (id: string | null) => void;
+    setConversationName: (conversationId: string, newName: string) => void;
     handleSendMessage: (message: string) => void;
     handleReceiveMessage: (message: Message) => void;
     handleUpdateMessage: (messageId: string, newContent: string) => void;

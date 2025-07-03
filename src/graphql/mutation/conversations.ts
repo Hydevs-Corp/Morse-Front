@@ -7,3 +7,11 @@ export const CREATE_CONV = gql`
         }
     }
 `;
+export const UPDATE_CONV_NAME = gql`
+    mutation UpdateConversationName($id: Int!, $name: String!) {
+        updateConversationName(id: $id, name: $name) {
+            id
+            name
+        }
+    }
+`;

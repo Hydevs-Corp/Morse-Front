@@ -8,7 +8,7 @@ export interface SettingsContextType {
 
 export const defaultSettings: Settings = {
     language: 'fr',
-    morsePercent: 1,
+    morsePercent: 0,
     soundEnabled: true,
     volume: 0.5,
 };

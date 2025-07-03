@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import MorseText from '../components/morse/MorseText';
 import { GetConversationById } from '../graphql/query/getConversation';
+import { GET_ONLINE_USERS } from '../graphql/query/getOnlineUsers';
 import {
     SEND_MESSAGE,
     UPDATE_MESSAGE,
@@ -68,6 +69,29 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
         },
     });
 
+    // Query to get initial online users list
+    useQuery(GET_ONLINE_USERS, {
+        onCompleted: data => {
+            console.log('Initial online users data received:', data);
+            if (data.getOnlineUsers?.online) {
+                const onlineUsers = data.getOnlineUsers.online.map(
+                    (user: { userId: string; lastConnection: string }) => ({
+                        userId: user.userId,
+                        lastConnection: new Date(user.lastConnection),
+                        socketId: [],
+                    })
+                );
+                console.log('Setting initial online users:', onlineUsers);
+                setOnlineList(onlineUsers);
+            }
+        },
+        onError: error => {
+            console.error('Error fetching online users:', error);
+        },
+        skip: !authStore.id,
+        fetchPolicy: 'cache-and-network', // Ensure we always get fresh data
+    });
+
     useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
         variables: { userId: parseInt(authStore.id || '0') },
         onData: ({ data }) => {
@@ -113,6 +137,7 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
 
     useSubscription(ONLINE_USERS_SUBSCRIPTION, {
         onData: ({ data }) => {
+            console.log('Online users subscription data received:', data);
             if (data.data?.onlineUsersUpdated) {
                 const onlineUsers = data.data.onlineUsersUpdated.online.map(
                     (user: { userId: string; lastConnection: string }) => ({
@@ -121,9 +146,17 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
                         socketId: [],
                     })
                 );
+                console.log(
+                    'Updating online users from subscription:',
+                    onlineUsers
+                );
                 setOnlineList(onlineUsers);
             }
         },
+        onError: error => {
+            console.error('Error in online users subscription:', error);
+        },
+        skip: !authStore.id,
     });
 
     const handleSendMessage = async (message: string) => {
@@ -293,23 +326,57 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
         return isOnline;
     };
 
+    const setConversationName = useCallback(
+        (conversationId: string, newName: string) => {
+            setHistory(prevHistory => {
+                const newHistory = { ...prevHistory };
+                if (newHistory[conversationId]) {
+                    newHistory[conversationId].name = newName;
+                }
+                return newHistory;
+            });
+        },
+        []
+    );
+
     useEffect(() => {
         if (authStore.id) {
-            setUserOnline();
+            setUserOnline()
+                .then(() => {
+                    console.log('User set online successfully');
+                    // Force a small delay to ensure the mutation is processed
+                    setTimeout(() => {
+                        // The subscription should automatically pick up the change
+                    }, 100);
+                })
+                .catch(error => {
+                    console.error('Error setting user online:', error);
+                });
+        } else {
+            // Clear online list when user logs out
+            setOnlineList([]);
         }
 
         return () => {
             if (authStore.id) {
-                setUserOffline();
+                setUserOffline().catch(error => {
+                    console.error('Error setting user offline:', error);
+                });
             }
         };
     }, [authStore.id, setUserOnline, setUserOffline]);
+
+    // Debug effect to track online list changes
+    useEffect(() => {
+        console.log('Online list updated:', onlineList);
+    }, [onlineList]);
 
     return (
         <ConversationContext.Provider
             value={{
                 history,
                 setCurrentConversationId,
+                setConversationName,
                 currentConversationId,
                 handleSendMessage,
                 handleReceiveMessage,

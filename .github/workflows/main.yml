@@ -65,7 +65,7 @@ jobs:
                       docker rm morse-front || true
 
                       # Déployer la nouvelle image
-                      docker run -d --name morse-front -p 80:80 angysquirrel/morse-front:latest
+                      docker run -d --name morse-front -p 85:80 angysquirrel/morse-front:latest
 
                       # Afficher les logs du conteneur
                       docker logs morse-front

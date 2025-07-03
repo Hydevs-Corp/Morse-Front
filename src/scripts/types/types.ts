@@ -17,6 +17,7 @@ export type Conversation = {
     conversationId: string;
     participants: User[];
     messages: Message[];
+    name?: string;
     lastMessageDate?: number;
     createdAt?: string;
     updatedAt?: string;

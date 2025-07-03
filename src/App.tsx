@@ -11,6 +11,7 @@ import Navbar from './layout/Navbar';
 import ConversationProvider from './providers/ConversationProvider';
 import { SettingsProvider } from './providers/SettingsProviders';
 import { useAuth } from './providers/useAuth';
+import Header from './layout/Header';
 
 function App() {
     const [opened] = useDisclosure();
@@ -47,6 +48,10 @@ function App() {
                             </Flex>
                         ) : (
                             <AppShell
+                                layout="alt"
+                                header={{
+                                    height: params.id ? 40 : 0,
+                                }}
                                 navbar={{
                                     width: 300,
                                     breakpoint: 'sm',
@@ -61,6 +66,11 @@ function App() {
                                     },
                                 }}
                             >
+                                {params.id && (
+                                    <AppShell.Header>
+                                        <Header />
+                                    </AppShell.Header>
+                                )}
                                 <AppShell.Navbar>
                                     <Navbar />
                                 </AppShell.Navbar>

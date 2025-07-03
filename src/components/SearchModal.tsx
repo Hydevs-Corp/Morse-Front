@@ -1,21 +1,18 @@
+import { gql, useMutation, useQuery } from '@apollo/client';
+import { Box, Flex, Paper, Skeleton, Text, TextInput } from '@mantine/core';
+import { modals } from '@mantine/modals';
 import {
-    ActionIcon,
-    Box,
-    Flex,
-    Input,
-    Paper,
-    Skeleton,
-    Text,
-    Tooltip,
-} from '@mantine/core';
+    IconMessageCirclePlus,
+    IconMinus,
+    IconPlus,
+} from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useAuth } from '../providers/useAuth';
 import type { User } from '../scripts/types/types';
-import AddConvFriend from './AddConvFriend';
-import { IconMessageCirclePlus } from '@tabler/icons-react';
-import { gql, useMutation, useQuery } from '@apollo/client';
-import { useNavigate } from 'react-router';
-import { modals } from '@mantine/modals';
+import ConvFriend from './ConvFriend';
+import MorseButton from './morse/MorseButton';
+import MorseText from './morse/MorseText';
 
 const CREATE_CONV = gql`
     mutation CreateConversation($participantIds: [Int!]!) {
@@ -83,19 +80,13 @@ const SearchModal = ({ users }: { users: User[] }) => {
     const loginId = authStore?.id;
 
     const handleClick = () => {
-        console.log('Start a new conversation clicked');
         const idExists =
             !!conversationData?.conversationsByParticipant?.[0]?.id;
-        console.log(
-            'Conversation ID exists:',
-            conversationData?.conversationsByParticipant
-        );
+
         if (idExists) {
-            console.log('Conversation already exists, navigating to it');
             n(`/${conversationData.conversationsByParticipant[0].id}`);
             return;
         } else {
-            console.log('Creating a new conversation');
             mutateFunction({
                 variables: {
                     participantIds: [
@@ -165,51 +156,73 @@ const SearchModal = ({ users }: { users: User[] }) => {
             </Paper>
         );
     }
+
+    const potentialUsers = users
+        .filter((user: User) => `${user.id}` !== authStore.id)
+        .filter(
+            (user: User) =>
+                user.name.toLowerCase().includes(searchUser.toLowerCase()) &&
+                userList.find(u => u.id === user.id) === undefined
+        );
+
     return (
-        <Flex direction="column" gap="md">
-            <Input
+        <Flex direction="column">
+            <TextInput
                 placeholder="Search for a user"
                 value={searchUser}
                 onChange={e => setSearchUser(e.currentTarget.value)}
+                mb={'xs'}
             />
-            <Box>
-                {userList.map(User => <Text key={User.id}>{User.name}</Text>) ||
-                    'No users found'}
-            </Box>
             <Flex direction="column" gap="xs">
-                {users
-                    .filter((user: User) => `${user.id}` !== authStore.id)
-                    .filter((user: User) =>
-                        user.name
-                            .toLowerCase()
-                            .includes(searchUser.toLowerCase())
-                    )
-                    .map((user: User) => (
-                        <AddConvFriend
-                            setUserList={setUserList}
-                            {...user}
-                            key={user.id}
-                        />
-                    ))}
+                {userList.length > 0 && (
+                    <MorseText c="grey">
+                        Users added to the conversation:
+                    </MorseText>
+                )}
+                {userList.map(user => (
+                    <ConvFriend
+                        actionColor="red"
+                        icon={<IconMinus />}
+                        action={user =>
+                            setUserList(prev =>
+                                prev.filter(u => u.id !== user.id)
+                            )
+                        }
+                        {...user}
+                        key={user.id}
+                    />
+                ))}
             </Flex>
-            <Flex
-                gap="md"
-                justify="flex-end"
-                align="center"
-                direction="row"
-                wrap="wrap"
-                mr={'md'}
-            >
-                <Tooltip label="Start a new conversation" withArrow>
-                    <ActionIcon
-                        variant="primary"
-                        size="xl"
-                        aria-label="action icon"
-                        onClick={handleClick}
-                    >
-                        <IconMessageCirclePlus />
-                    </ActionIcon>
-                </Tooltip>
+            <Flex direction="column" gap="xs">
+                {potentialUsers.length === 0 ? (
+                    <MorseText mt={'xs'} c="grey">
+                        No users left to add {':)'}
+                    </MorseText>
+                ) : (
+                    <MorseText mt={'xs'} c="grey">
+                        Potential users to add:
+                    </MorseText>
+                )}
+                {potentialUsers.map((user: User) => (
+                    <ConvFriend
+                        action={user => {
+                            if (!userList.find(u => u.id === user.id)) {
+                                setUserList(prevUsers => [...prevUsers, user]);
+                            }
+                        }}
+                        icon={<IconPlus />}
+                        {...user}
+                        key={user.id}
+                    />
+                ))}
+            </Flex>
+            <Flex gap="md" mt={'xs'} justify="flex-end">
+                <MorseButton
+                    onClick={handleClick}
+                    rightSection={<IconMessageCirclePlus />}
+                >
+                    Start a new conversation
+                </MorseButton>
             </Flex>
         </Flex>
     );

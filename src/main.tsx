@@ -94,7 +94,7 @@ const customTheme = createTheme({
 });
 
 const httpLink = createHttpLink({
-    uri: 'http://localhost:3001/graphql',
+    uri: `${window.location.origin.replace(':5173', '')}:3001/graphql`,
 });
 
 const wsLink = new GraphQLWsLink(

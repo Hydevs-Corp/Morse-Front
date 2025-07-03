@@ -24,6 +24,7 @@ export const MESSAGE_FRAGMENT = gql`
 export const CONVERSATION_FRAGMENT = gql`
     fragment ConversationFragment on Conversation {
         id
+        name
         participants {
             ...UserFragment
         }
