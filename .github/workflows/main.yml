@@ -74,12 +74,19 @@ jobs:
                       docker stop morse-front || true
                       docker rm morse-front || true
 
-                      echo "Running new Docker container 'morse-front'"
+                      echo "Creating .env file on remote server"
+                      mkdir -p /home/ubuntu/front/morse || exit 1
+                      echo "${{ secrets.DOTENV_CONTENT }}" > /home/ubuntu/front/morse/.env || exit 1
+                      if [ ! -f /home/ubuntu/front/morse/.env ]; then
+                          echo "Error: .env file was not created properly."
+                          exit 1
+                      fi
                       docker run -d \
                           --name morse-front \
-                          -p 85:80 \
+                          -p 3000:3000 \
                           --restart unless-stopped \
-                          $IMAGE_TAG
+                          --env-file /home/ubuntu/front/morse/.env \
+                          $IMAGE_TAG || exit 1
 
                       echo "Waiting for container to stabilize..."
                       sleep 10 
