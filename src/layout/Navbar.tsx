@@ -31,6 +31,7 @@ import MorseTooltip from '../components/morse/MorseTooltip';
 import useConversationName from '../hook/UseConversationName';
 import { useAuth } from '../providers/useAuth';
 import { useSettings } from '../providers/useSettings';
+import { notifications } from '@mantine/notifications';
 
 const objectKeys = Object.keys as <T extends object>(obj: T) => (keyof T)[];
 
@@ -55,6 +56,14 @@ const Navbar = () => {
     };
 
     const handleUpdateAvatar = () => {
+        if (avatarFile && avatarFile.size > 2 * 1024 * 1024) {
+            notifications.show({
+                title: 'File too large',
+                message: 'Please upload an image smaller than 2MB.',
+                color: 'red',
+            });
+            return;
+        }
         if (avatarFile) {
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -67,6 +76,9 @@ const Navbar = () => {
                 setModifyUser(false);
             };
             reader.readAsDataURL(avatarFile);
+        } else {
+            updateUser(form.values.name, form.values.avatar);
+            setModifyUser(false);
         }
     };
 
@@ -116,6 +128,7 @@ const Navbar = () => {
                     />
                 ))}
             </Flex>
+
             <Box w={'100%'}>
                 {authStore?.token && (
                     <Popover width={'285'}>
@@ -133,7 +146,7 @@ const Navbar = () => {
                                         gap={8}
                                     >
                                         <Flex>
-                                            <Avatar src={form.values.avatar} />
+                                            <Avatar src={authStore.avatar} />
                                         </Flex>
                                         <MorseText>{authStore.name}</MorseText>
                                         <Text c={'grey'}>#{authStore.id}</Text>

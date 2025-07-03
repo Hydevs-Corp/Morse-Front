@@ -1,4 +1,12 @@
-import { ActionIcon, Card, Flex, Menu, Text, TextInput } from '@mantine/core';
+import {
+    ActionIcon,
+    Avatar,
+    Card,
+    Flex,
+    Menu,
+    Text,
+    TextInput,
+} from '@mantine/core';
 import { modals } from '@mantine/modals';
 // @ts-expect-error - morse-code-translator is not typed
 import morse from '@ozdemirburak/morse-code-translator';
@@ -26,15 +34,14 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
     const { settings } = useSettings();
 
     const handleGenerateAudio = () => {
-        // console.log('Volume : ', settings.volume);
         if (settings.volume <= 0) return console.log('Sound is disabled');
         morse
             .audio(message.content, {
                 wpm: 18,
                 volume: settings.volume,
                 oscillator: {
-                    type: 'triangle', // sine, square, sawtooth, triangle
-                    frequency: 800, // value in hertz
+                    type: 'triangle',
+                    frequency: 800,
                 },
             })
             .play();
@@ -121,10 +128,12 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
                     gap={4}
                 >
                     {lastUserId === message.user.id && (
-                        <Flex justify={'center'} align={'center'} gap={4}>
-                            <MorseText size="xs" c="gray">
-                                {message.user.name || message.user.email}
-                            </MorseText>
+                        <Flex
+                            direction={isCurrentUser ? 'row' : 'row-reverse'}
+                            justify={'center'}
+                            align={'center'}
+                            gap={4}
+                        >
                             <ActionIcon
                                 variant="light"
                                 color="grape"
@@ -133,12 +142,12 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
                                 p={0}
                                 onClick={handleGenerateAudio}
                             >
-                                <IconVolume
-                                    // color="purple"
-                                    width={16}
-                                    height={16}
-                                />
+                                <IconVolume width={16} height={16} />
                             </ActionIcon>
+                            <MorseText size="xs" c="gray">
+                                {message.user.name || message.user.email}
+                            </MorseText>
+                            <Avatar size={'sm'} src={message.user.avatar} />
                         </Flex>
                     )}
                     <Menu.Target>

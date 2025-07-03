@@ -13,8 +13,8 @@ export const SET_USER_OFFLINE = gql`
 `;
 
 export const UPDATE_USER = gql`
-    mutation updateUser($name: String!) {
-        updateUser(name: $name) {
+    mutation updateUser($name: String!, $avatar: String) {
+        updateUser(name: $name, avatar: $avatar) {
             email
             id
             name

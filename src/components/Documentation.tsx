@@ -20,7 +20,7 @@ import {
 import MorseText from './morse/MorseText';
 import MorseTitle from './morse/MorseTitle';
 import useMorse from '../hook/useMorse';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 
 const Documentation = () => {
     const { handleRender, encode, decode } = useMorse();
@@ -190,7 +190,7 @@ const Documentation = () => {
                                             rowIndex * 3 + colIndex;
                                         const item = morseLetters[itemIndex];
                                         return item ? (
-                                            <>
+                                            <Fragment key={colIndex}>
                                                 <Table.Td
                                                     key={`letter-${itemIndex}`}
                                                 >
@@ -205,16 +205,16 @@ const Documentation = () => {
                                                         {item.morse}
                                                     </MorseText>
                                                 </Table.Td>
-                                            </>
+                                            </Fragment>
                                         ) : (
-                                            <>
+                                            <Fragment key={colIndex}>
                                                 <Table.Td
                                                     key={`empty-letter-${itemIndex}`}
                                                 ></Table.Td>
                                                 <Table.Td
                                                     key={`empty-morse-${itemIndex}`}
                                                 ></Table.Td>
-                                            </>
+                                            </Fragment>
                                         );
                                     }
                                 )}
@@ -260,7 +260,7 @@ const Documentation = () => {
                                             rowIndex * 3 + colIndex;
                                         const item = morseNumbers[itemIndex];
                                         return item ? (
-                                            <>
+                                            <Fragment key={colIndex}>
                                                 <Table.Td
                                                     key={`number-${itemIndex}`}
                                                 >
@@ -275,16 +275,16 @@ const Documentation = () => {
                                                         {item.morse}
                                                     </MorseText>
                                                 </Table.Td>
-                                            </>
+                                            </Fragment>
                                         ) : (
-                                            <>
+                                            <Fragment key={colIndex}>
                                                 <Table.Td
                                                     key={`empty-number-${itemIndex}`}
                                                 ></Table.Td>
                                                 <Table.Td
                                                     key={`empty-morse-${itemIndex}`}
                                                 ></Table.Td>
-                                            </>
+                                            </Fragment>
                                         );
                                     }
                                 )}

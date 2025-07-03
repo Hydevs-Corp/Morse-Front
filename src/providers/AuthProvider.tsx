@@ -11,6 +11,7 @@ import { parseJwt } from './parseJwt';
 import type { AuthContextType } from './auth.types';
 import { defaultUserData } from './auth.types';
 import { UPDATE_USER } from '../graphql/mutation/users';
+import { notifications } from '@mantine/notifications';
 
 export type { AuthContextType };
 
@@ -42,7 +43,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 token: tokenJWT,
                 id: payload.sub.toString(),
                 name: payload.email.split('@')[0],
-                avatar : payload.avatar,
+                avatar: payload.avatar,
             });
             console.log('Parsed JWT payload:', payload);
             localStorage.setItem('token', tokenJWT);
@@ -69,7 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 token: res?.data?.signup?.token || '',
                 id: res?.data?.signup?.user?.id || -1,
                 name: res?.data?.signup?.user?.name || '',
-                avatar: res?.data?.signup?.user?.avatar || ''
+                avatar: res?.data?.signup?.user?.avatar || '',
             });
 
             localStorage.setItem('token', res?.data?.login || '');
@@ -119,17 +120,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [refetch]);
 
-    const [userMutate, { error, loading }] = useMutation(UPDATE_USER);
+    const [userMutate, { error, loading }] = useMutation(UPDATE_USER, {
+        onError: error => {
+            console.error('Update user error:', error);
+            notifications.show({
+                title: 'Error',
+                message: error.message.includes('413')
+                    ? 'Image too large'
+                    : error.message,
+                color: 'red',
+            });
+        },
+    });
     const updateUser = useCallback(
-        async (name: string) => {
+        async (name: string, avatar: string) => {
             try {
                 const res = await userMutate({
-                    variables: { name },
+                    variables: { name, avatar },
                 });
-
+                console.log('Update user response:', res);
+                if (!res.data?.updateUser) {
+                    return;
+                }
                 setAuthStore(prev => ({
                     ...prev,
                     name: res.data.updateUser.name,
+                    avatar: res.data.updateUser.avatar,
                 }));
             } catch (e) {
                 console.error('Update user error:', e);
