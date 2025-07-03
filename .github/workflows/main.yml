@@ -32,7 +32,7 @@ jobs:
                       type=ref,event=branch
                       type=ref,event=pr
                       type=raw,value=latest,enable={{is_default_branch}}
-                      type=sha,format=long # Ajout du tag avec le SHA du commit
+                      type=sha,format=long
 
             - name: Build and push Docker image
               uses: docker/build-push-action@v5
@@ -50,9 +50,9 @@ jobs:
             - name: Clean up Docker images on self-hosted runner
               if: always()
               run: |
-                  echo "Cleaning up Docker system on runner..."
-                  docker system prune -af || true # Supprime les images, conteneurs, volumes et réseaux non utilisés
-                  docker volume prune -f || true # S'assure que les volumes sont aussi nettoyés
+                  echo "Cleaning up Docker images..."
+                  docker system prune -af || true 
+                  docker volume prune -f || true
 
     pull-image-and-deploy:
         runs-on: self-hosted
@@ -69,7 +69,7 @@ jobs:
                       IMAGE_TAG="angysquirrel/morse-front:${{ github.sha }}" 
 
                       echo "Pulling Docker image: $IMAGE_TAG"
-                      docker pull $IMAGE_TAG || { echo "Failed to pull image $IMAGE_TAG"; exit 1; }
+                      docker pull $IMAGE_TAG
 
                       echo "Stopping and removing existing container 'morse-front' (if any)"
                       docker stop morse-front || true
@@ -80,27 +80,24 @@ jobs:
                           --name morse-front \
                           -p 85:80 \
                           --restart unless-stopped \
-                          $IMAGE_TAG || { echo "Failed to start container 'morse-front'"; exit 1; }
+                          $IMAGE_TAG
 
                       echo "Waiting for container to stabilize..."
                       sleep 10 
 
-                      echo "Displaying last 20 lines of container logs for initial startup check:"
+                      echo "Checking container logs for initial startup"
                       docker logs morse-front | tail -n 20
 
                       echo "Verifying container status..."
                       if docker ps -q -f name=morse-front; then
                           echo "Container 'morse-front' is running successfully."
-                          # Optionnel : Ajoutez un health check HTTP si votre application a une route de santé
-                          # curl -f http://localhost:85/health || { echo "Health check failed!"; exit 1; }
                       else
                           echo "Container 'morse-front' failed to start."
-                          echo "Full logs for 'morse-front':"
-                          docker logs morse-front # Affiche les logs complets en cas d'échec
+                          docker logs morse-front 
                           exit 1
                       fi
 
-            - name: Clean up old Docker images on remote server
+            - name: Clean up Docker artifacts on remote server
               if: always()
               uses: appleboy/ssh-action@v1.0.3
               with:
@@ -109,7 +106,5 @@ jobs:
                   key: ${{ secrets.VPS_PRIVATE_KEY }}
                   script: |
                       echo "Cleaning up old Docker images on remote server..."
-                      # Supprime les images non utilisées de plus de 24 heures. Ajustez la durée si nécessaire.
                       docker image prune -af --filter "until=24h" || true
-                      # Nettoie également les volumes et réseaux non utilisés sur le système
                       docker system prune -f || true
