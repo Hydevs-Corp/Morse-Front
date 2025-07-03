@@ -32,7 +32,6 @@ jobs:
                       type=ref,event=branch
                       type=ref,event=pr
                       type=raw,value=latest,enable={{is_default_branch}}
-                      type=sha,format=long
 
             - name: Build and push Docker image
               uses: docker/build-push-action@v5
@@ -66,7 +65,7 @@ jobs:
                   username: ${{ secrets.VPS_USERNAME }}
                   key: ${{ secrets.VPS_PRIVATE_KEY }}
                   script: |
-                      IMAGE_TAG="angysquirrel/morse-front:${{ github.sha }}" 
+                      IMAGE_TAG="angysquirrel/morse-front:latest" 
 
                       echo "Pulling Docker image: $IMAGE_TAG"
                       docker pull $IMAGE_TAG
