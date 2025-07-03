@@ -1,5 +1,7 @@
 import { ActionIcon, Card, Flex, Menu, Text, TextInput } from '@mantine/core';
 import { modals } from '@mantine/modals';
+// @ts-expect-error - morse-code-translator is not typed
+import morse from '@ozdemirburak/morse-code-translator';
 import {
     IconCheck,
     IconCopy,
@@ -9,11 +11,10 @@ import {
     IconX,
 } from '@tabler/icons-react';
 import { useState } from 'react';
+import { useSettings } from '../providers/useSettings';
 import type { MessageProps } from '../scripts/types/types';
 import { useConversation } from './conversations/useConversation';
 import MorseText from './morse/MorseText';
-import morse from '@ozdemirburak/morse-code-translator';
-import { useSettings } from '../providers/useSettings';
 
 const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
     const { handleUpdateMessage, handleDeleteMessage } = useConversation();

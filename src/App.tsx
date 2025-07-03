@@ -2,7 +2,6 @@ import {
     ActionIcon,
     Affix,
     AppShell,
-    Button,
     Card,
     Drawer,
     Flex,
@@ -11,18 +10,18 @@ import {
 import { useDisclosure, useViewportSize } from '@mantine/hooks';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
+import { IconFile } from '@tabler/icons-react';
 import { Outlet, useParams } from 'react-router';
 import './App.css';
 import ButtonLogin from './components/auth/ButtonLogin';
 import ButtonRegister from './components/auth/ButtonRegister';
+import Documentation from './components/Documentation';
 import Aside from './layout/Aside';
+import Header from './layout/Header';
 import Navbar from './layout/Navbar';
 import ConversationProvider from './providers/ConversationProvider';
 import { SettingsProvider } from './providers/SettingsProviders';
 import { useAuth } from './providers/useAuth';
-import Header from './layout/Header';
-import Documentation from './components/Documentation';
-import { IconFile } from '@tabler/icons-react';
 
 function App() {
     const [opened] = useDisclosure();
