@@ -13,6 +13,7 @@ import {
     Text,
     Tooltip,
 } from '@mantine/core';
+import { useForm } from '@mantine/form';
 import {
     IconDeviceFloppy,
     IconLogout,
@@ -27,14 +28,21 @@ import MorseInput from '../components/morse/MorseInput';
 import MorseText from '../components/morse/MorseText';
 import MorseTooltip from '../components/morse/MorseTooltip';
 import { GetMyConversation } from '../graphql/query/getMyConversations';
-import { useSettings } from '../providers/useSettings';
 import { useAuth } from '../providers/useAuth';
+import { useSettings } from '../providers/useSettings';
 
 const Navbar = () => {
-    const { authStore, logout } = useAuth();
+    const { authStore, logout, updateUser, state } = useAuth();
     const { settings, updateSettings } = useSettings();
     const { data } = useQuery(GetMyConversation);
     const [modifyUser, setModifyUser] = useState(false);
+
+    const form = useForm({
+        initialValues: {
+            name: authStore.name,
+        },
+    });
+
     return (
         <Flex
             direction={'column'}
@@ -48,13 +56,6 @@ const Navbar = () => {
                     Morse App
                 </MorseText>
             </Flex>
-            {/* <Divider
-                my={4}
-                color="#4a4039"
-                h={1}
-                w={'95%'}
-                orientation="horizontal"
-            /> */}
             <Flex direction={'column'} w={'100%'} h={'100%'} flex={1}>
                 {authStore.id && (
                     <Flex
@@ -156,9 +157,24 @@ const Navbar = () => {
                                                 <ActionIcon
                                                     variant="primary"
                                                     size="sm"
-                                                    onClick={() =>
-                                                        setModifyUser(false)
+                                                    loading={
+                                                        state.updateUser.loading
                                                     }
+                                                    onClick={() => {
+                                                        if (
+                                                            form.values.name ===
+                                                            authStore.name
+                                                        ) {
+                                                            setModifyUser(
+                                                                false
+                                                            );
+                                                            return;
+                                                        }
+                                                        updateUser(
+                                                            form.values.name
+                                                        );
+                                                        setModifyUser(false);
+                                                    }}
                                                 >
                                                     <IconDeviceFloppy />
                                                 </ActionIcon>
@@ -184,40 +200,22 @@ const Navbar = () => {
                                         w={'100%'}
                                     />
                                     <Flex direction={'column'} gap={8}>
-                                        {modifyUser ? (
-                                            <>
-                                                <MorseInput
-                                                    mih={'12'}
-                                                    label="Name"
-                                                    defaultValue={
-                                                        authStore.name
-                                                    }
-                                                />
-                                                <MorseInput
-                                                    mih={'12'}
-                                                    label="Email"
-                                                    defaultValue={
-                                                        authStore.email
-                                                    }
-                                                />
-                                                <MorseInput
-                                                    label="ID:"
-                                                    defaultValue={authStore.id}
-                                                />
-                                            </>
-                                        ) : (
-                                            <>
-                                                <MorseText mih={'12'}>
-                                                    Name: {authStore.name}
-                                                </MorseText>
-                                                <MorseText mih={'12'}>
-                                                    Email: {authStore.email}
-                                                </MorseText>
-                                                <MorseText>
-                                                    ID: {authStore.id}
-                                                </MorseText>
-                                            </>
-                                        )}
+                                        <MorseInput
+                                            label="Name"
+                                            // defaultValue={authStore.name}
+                                            disabled={!modifyUser}
+                                            {...form.getInputProps('name')}
+                                        />
+                                        <MorseInput
+                                            label="Email"
+                                            defaultValue={authStore.email}
+                                            disabled={true}
+                                        />
+                                        <MorseInput
+                                            label="ID"
+                                            defaultValue={authStore.id}
+                                            disabled={true}
+                                        />
                                     </Flex>
                                 </div>
                                 <div>

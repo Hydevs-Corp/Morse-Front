@@ -5,7 +5,12 @@ export interface AuthContextType {
     state: {
         loading: boolean;
         error: string | null;
+        updateUser: {
+            loading: boolean;
+            error: string | null;
+        };
     };
+    updateUser: (name: string) => void;
     signin: (email: string, password: string) => void;
     signup: (email: string, password: string) => void;
     logout: () => void;

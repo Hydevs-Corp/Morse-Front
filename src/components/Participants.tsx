@@ -2,6 +2,7 @@ import { Avatar, Box, Flex, Text } from '@mantine/core';
 import { useAuth } from '../providers/useAuth';
 import { useConversation } from './conversations/useConversation';
 import ConvProfil from './ConvProfil';
+import MorseText from './morse/MorseText';
 
 const Participants = () => {
     const { history, currentConversationId } = useConversation();
@@ -54,7 +55,7 @@ const Participants = () => {
                                     direction="column"
                                     wrap="wrap"
                                 >
-                                    <Text>{participant.name}</Text>
+                                    <MorseText>{participant.name}</MorseText>
                                     <Text c="grey">#{`${participant.id}`}</Text>
                                 </Flex>
                             </Box>

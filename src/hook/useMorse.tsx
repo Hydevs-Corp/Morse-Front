@@ -74,7 +74,7 @@ const morseToText = (morse: string) => {
                 .split(' ')
                 .map(code => {
                     const entry = morseTable.find(morse => morse.code === code);
-                    return entry ? entry.char : '';
+                    return entry ? entry.char : code;
                 })
                 .join('')
         )

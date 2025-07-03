@@ -20,7 +20,6 @@
         "@tabler/icons-react": "^3.34.0",
         "graphql": "^16.11.0",
         "graphql-ws": "^6.0.5",
-        "morse-code-converter": "^1.0.2",
         "react": "^19.1.0",
         "react-dom": "^19.1.0",
         "react-router": "^7.6.2",

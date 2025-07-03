@@ -1,16 +1,20 @@
-import { Box, Button, Flex, Popover, Text, TextInput } from '@mantine/core';
+import { useMutation } from '@apollo/client';
+import { ActionIcon, Flex, Popover, TextInput } from '@mantine/core';
+import { IconPencil } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { useConversation } from '../components/conversations/useConversation';
+import MorseText from '../components/morse/MorseText';
 import { UPDATE_CONV_NAME } from '../graphql/mutation/conversations';
-import { useMutation } from '@apollo/client';
+import { useAuth } from '../providers/useAuth';
 
 const Header = () => {
     const { history, currentConversationId, setConversationName } =
         useConversation();
-
+    const { authStore } = useAuth();
     const [editedConversationName, setEditedConversationName] = useState('');
+    const [tempConversationName, setTempConversationName] = useState('');
 
-    const [updateConversationName, { loading, error }] = useMutation(
+    const [updateConversationName, { loading }] = useMutation(
         UPDATE_CONV_NAME,
         {
             onCompleted: data => {
@@ -19,9 +23,6 @@ const Header = () => {
                     setConversationName(
                         currentConversationId,
                         updatedConv.name
-                    );
-                    console.log(
-                        'Conversation name updated successfully on the server!'
                     );
                 }
             },
@@ -38,13 +39,15 @@ const Header = () => {
     useEffect(() => {
         if (currentConversation?.name) {
             setEditedConversationName(currentConversation.name);
+            setTempConversationName(currentConversation.name);
         } else {
             setEditedConversationName('');
+            setTempConversationName('');
         }
-    }, [currentConversation]);
+    }, [currentConversation?.name]);
 
     const handleSetNameClick = () => {
-        const trimmedName = editedConversationName.trim();
+        const trimmedName = tempConversationName.trim();
 
         if (currentConversationId && trimmedName !== '') {
             updateConversationName({
@@ -53,6 +56,7 @@ const Header = () => {
                     name: trimmedName,
                 },
             });
+            setEditedConversationName(trimmedName);
         } else if (!currentConversationId) {
             console.warn(
                 'Cannot set conversation name: no current conversation selected.'
@@ -61,8 +65,24 @@ const Header = () => {
             console.warn('Cannot set conversation name: name is empty.');
         }
     };
-    console.log('Current conversation:', currentConversation?.name);
-    console.log('Edited conversation name:', editedConversationName);
+
+    const renderConversationName = () => {
+        if (editedConversationName !== '') {
+            return editedConversationName;
+        } else if (currentConversation) {
+            const participants = currentConversation.participants || [];
+            const otherParticipants = participants.filter(
+                participant => authStore.email !== participant.email
+            );
+            const participantNames = otherParticipants
+                .map(el => el.name)
+                .join(', ');
+
+            return participantNames ? participantNames : 'Conversation';
+        } else {
+            return 'Conversation';
+        }
+    };
 
     return (
         <Flex
@@ -74,28 +94,36 @@ const Header = () => {
             w={'50%'}
             h={'100%'}
         >
-            <Popover>
+            <Popover trapFocus position="bottom" withArrow shadow="md">
                 <Popover.Target>
-                    <Text ml={'sm'}>{editedConversationName !== '' ? editedConversationName : currentConversation?.name}</Text>
+                    <MorseText ml={'sm'}>{renderConversationName()}</MorseText>
                 </Popover.Target>
                 <Popover.Dropdown>
-                    <TextInput
-                        placeholder="Edit conversation name"
-                        value={editedConversationName}
-                        onChange={event =>
-                            setEditedConversationName(event.currentTarget.value)
-                        }
-                        style={{ flexGrow: 1, maxWidth: '300px' }}
-                        disabled={loading}
-                    />
-
-                    <Button
-                        onClick={handleSetNameClick}
-                        disabled={!currentConversationId || loading}
-                        loading={loading}
+                    <Flex
+                        gap="xs"
+                        justify="flex-start"
+                        align="center"
+                        direction="row"
+                        wrap="wrap"
                     >
-                        Save Name
-                    </Button>
+                        <TextInput
+                            placeholder="Edit conversation name"
+                            value={tempConversationName}
+                            onChange={event =>
+                                setTempConversationName(
+                                    event.currentTarget.value
+                                )
+                            }
+                            disabled={loading}
+                        />
+                        <ActionIcon
+                            onClick={handleSetNameClick}
+                            disabled={!currentConversationId || loading}
+                            loading={loading}
+                        >
+                            <IconPencil />
+                        </ActionIcon>
+                    </Flex>
                 </Popover.Dropdown>
             </Popover>
         </Flex>

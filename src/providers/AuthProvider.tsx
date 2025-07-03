@@ -10,6 +10,7 @@ import { AuthContext } from './AuthContext';
 import { parseJwt } from './parseJwt';
 import type { AuthContextType } from './auth.types';
 import { defaultUserData } from './auth.types';
+import { UPDATE_USER } from '../graphql/mutation/users';
 
 export type { AuthContextType };
 
@@ -18,6 +19,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const [loginMutate, { error: loginError, loading: loginLoading }] =
         useMutation(signin_MUTATE);
+
     const signin = async (
         email: string,
         password: string
@@ -114,6 +116,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [refetch]);
 
+    const [userMutate, { error, loading }] = useMutation(UPDATE_USER);
+    const updateUser = useCallback(
+        async (name: string) => {
+            try {
+                const res = await userMutate({
+                    variables: { name },
+                });
+
+                setAuthStore(prev => ({
+                    ...prev,
+                    name: res.data.updateUser.name,
+                }));
+            } catch (e) {
+                console.error('Update user error:', e);
+            }
+        },
+        [userMutate]
+    );
+
     useEffect(() => {
         silentLogin();
     }, [silentLogin]);
@@ -122,6 +143,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         <AuthContext.Provider
             value={{
                 authStore,
+                updateUser,
                 signup,
                 signin,
                 logout,
@@ -132,6 +154,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                         errorMe?.message ||
                         null,
                     loading: registerLoading || loginLoading || loadingMe,
+                    updateUser: {
+                        loading,
+                        error: error?.message || null,
+                    },
                 },
             }}
         >
