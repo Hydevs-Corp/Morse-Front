@@ -11,3 +11,11 @@ export const SET_USER_OFFLINE = gql`
         setUserOffline
     }
 `;
+
+export const UPDATE_USER = gql`
+    mutation UpdateUser($name: String!) {
+        updateUser(name: $name) {
+            name
+        }
+    }
+`;
