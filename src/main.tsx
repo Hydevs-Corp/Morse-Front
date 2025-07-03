@@ -95,12 +95,12 @@ const customTheme = createTheme({
 });
 
 const httpLink = createHttpLink({
-    uri: `${import.meta.env.VITE_API_URL}/graphql`,
+    uri: `${window.location.protocol}//${window.location.hostname}:3001/graphql`,
 });
 
 const wsLink = new GraphQLWsLink(
     createClient({
-        url: `${import.meta.env.VITE_API_URL?.replace('http', 'ws')}/graphql`,
+        url: `${window.location.protocol}//${window.location.hostname}:3001/graphql`,
         connectionParams: () => {
             const token = localStorage.getItem('token');
             return {
