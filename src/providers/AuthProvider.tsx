@@ -33,6 +33,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const tokenJWT = res.data?.signin;
             console.log('Login response:', res);
             if (!tokenJWT) {
+                notifications.show({
+                    title: 'Login Error',
+                    message: 'Invalid email or password',
+                    color: 'red',
+                });
                 return {
                     errors: [new GraphQLError('Invalid email or password')],
                 };
