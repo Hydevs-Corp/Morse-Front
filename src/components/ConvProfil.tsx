@@ -3,11 +3,11 @@ import type { User } from '../scripts/types/types';
 import { useConversation } from './conversations/useConversation';
 import MorseText from './morse/MorseText';
 
-const ConvProfil = ({ name, id, email }: User) => {
+const ConvProfil = ({ name, id, email, avatar }: User) => {
     const { isOnline } = useConversation();
-
+    console.log('ConvProfil', { name, id, email, avatar });
     return (
-        <Card p={'xs'} shadow="xs" w={'100%'} >
+        <Card p={'xs'} shadow="xs" w={'100%'}>
             <Flex
                 gap="md"
                 justify="space-between"
@@ -29,7 +29,7 @@ const ConvProfil = ({ name, id, email }: User) => {
                             size={10}
                             offset={5}
                         >
-                            <Avatar></Avatar>
+                            <Avatar src={avatar} />
                         </Indicator>
                         <Box>
                             <MorseText>

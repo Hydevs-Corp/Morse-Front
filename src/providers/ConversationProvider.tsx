@@ -28,6 +28,17 @@ import type {
 import { ConversationContext } from './ConversationContext';
 import { useAuth } from './useAuth';
 
+const removeArrayDuplicates = <T extends { id: string }>(array: T[]): T[] => {
+    const uniqueIds = new Set<string>();
+    return array.filter(item => {
+        if (uniqueIds.has(item.id)) {
+            return false;
+        }
+        uniqueIds.add(item.id);
+        return true;
+    });
+};
+
 const ConversationProvider = ({ children }: { children: ReactNode }) => {
     const { authStore } = useAuth();
     const [history, setHistory] = useState<Record<string, Conversation>>({});
@@ -62,6 +73,10 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
                         lastMessageDate: conversation.lastMessageDate
                             ? new Date(conversation.lastMessageDate).getTime()
                             : undefined,
+                        messages: removeArrayDuplicates([
+                            ...(prevHistory[conversation.id]?.messages || []),
+                            ...conversation.messages,
+                        ]),
                     },
                 }));
             }
@@ -91,7 +106,6 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
         fetchPolicy: 'cache-and-network',
     });
 
-    // Fetch initial conversations list
     useQuery(GetMyConversation, {
         onCompleted: data => {
             if (data.getMyConversations) {
@@ -130,8 +144,8 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
         onError: error => {
             console.error('Error fetching conversations:', error);
         },
-        skip: !authStore.id,
-        fetchPolicy: 'cache-and-network',
+        // skip: !authStore.id,
+        fetchPolicy: 'network-only',
     });
 
     useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
@@ -212,6 +226,7 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
     const setCurrentConversationId = useCallback(
         (id: string | null) => {
             _setCurrentConversationId(id);
+            console.log('Setting current conversation ID:', id);
             if (id && !history[id]) {
                 setHistory(prevHistory => ({
                     ...prevHistory,

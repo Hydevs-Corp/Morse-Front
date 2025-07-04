@@ -1,26 +1,26 @@
 import {
-    Container,
-    Space,
-    List,
-    ThemeIcon,
-    Card,
-    Group,
-    Table,
-    TextInput,
+    Box,
     Button,
-    Textarea,
+    Card,
     Divider,
+    Group,
+    List,
+    Space,
+    Table,
+    Textarea,
+    TextInput,
+    ThemeIcon,
 } from '@mantine/core';
 import {
+    IconArrowLeft,
+    IconArrowRight,
     IconDots,
     IconSettings,
-    IconArrowRight,
-    IconArrowLeft,
 } from '@tabler/icons-react';
+import { Fragment, useState } from 'react';
+import useMorse from '../hook/useMorse';
 import MorseText from './morse/MorseText';
 import MorseTitle from './morse/MorseTitle';
-import useMorse from '../hook/useMorse';
-import { Fragment, useState } from 'react';
 
 const Documentation = () => {
     const { handleRender, encode, decode } = useMorse();
@@ -92,7 +92,7 @@ const Documentation = () => {
     ];
 
     return (
-        <Container size="md" py="xl">
+        <Box size="md" py="xl">
             <MorseTitle order={1} ta="center" mb="xl">
                 Morse Code Documentation
             </MorseTitle>
@@ -451,7 +451,7 @@ const Documentation = () => {
                 <MorseText>-{'>'} Guillaume Maugin,</MorseText>
                 <MorseText>-{'>'} Sébastien Branly</MorseText>
             </Card>
-        </Container>
+        </Box>
     );
 };
 

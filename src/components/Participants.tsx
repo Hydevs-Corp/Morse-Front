@@ -46,7 +46,10 @@ const Participants = () => {
                     direction="row"
                     wrap="wrap"
                 >
-                    <Avatar size={'xl'}></Avatar>
+                    <Avatar
+                        src={participantsToDisplay[0]?.avatar}
+                        size={'xl'}
+                    ></Avatar>
                     <Box>
                         {participantsToDisplay.map(participant => (
                             <Box key={participant.id}>
