@@ -9,6 +9,7 @@ import {
     Flex,
     NavLink,
     Popover,
+    Skeleton,
     Slider,
     Text,
     Tooltip,
@@ -39,7 +40,7 @@ const Navbar = () => {
     const { authStore, logout, updateUser, state } = useAuth();
     const { settings, updateSettings } = useSettings();
     const [modifyUser, setModifyUser] = useState(false);
-    const { history } = useConversation();
+    const { history, state: stateConversations } = useConversation();
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
 
     const getConversationName = useConversationName();
@@ -115,18 +116,33 @@ const Navbar = () => {
                         </Button>
                     </Flex>
                 )}
-                {objectKeys(history).map(conversationId => (
-                    <NavLink
-                        key={conversationId}
-                        component={RouterNavLink}
-                        to={`/${conversationId}`}
-                        label={
-                            <MorseText>
-                                {getConversationName(conversationId)}
-                            </MorseText>
-                        }
-                    />
-                ))}
+                {stateConversations.loading ? (
+                    <Flex
+                        justify="center"
+                        align="center"
+                        direction={'column'}
+                        gap={0}
+                    >
+                        <Skeleton height={32} my={4} radius="0" />
+                        <Skeleton height={32} my={4} radius="0" />
+                        <Skeleton height={32} my={4} radius="0" />
+                        <Skeleton height={32} my={4} radius="0" />
+                        <Skeleton height={32} my={4} radius="0" />
+                    </Flex>
+                ) : (
+                    objectKeys(history).map(conversationId => (
+                        <NavLink
+                            key={conversationId}
+                            component={RouterNavLink}
+                            to={`/${conversationId}`}
+                            label={
+                                <MorseText>
+                                    {getConversationName(conversationId)}
+                                </MorseText>
+                            }
+                        />
+                    ))
+                )}
             </Flex>
 
             <Box w={'100%'}>

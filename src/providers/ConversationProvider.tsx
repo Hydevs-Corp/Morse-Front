@@ -4,19 +4,19 @@ import { notifications } from '@mantine/notifications';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import MorseText from '../components/morse/MorseText';
+import {
+    DELETE_MESSAGE,
+    SEND_MESSAGE,
+    UPDATE_MESSAGE,
+} from '../graphql/mutation/messages';
+import { SET_USER_OFFLINE, SET_USER_ONLINE } from '../graphql/mutation/users';
 import { GetConversationById } from '../graphql/query/getConversation';
 import { GetMyConversation } from '../graphql/query/getMyConversations';
 import { GET_ONLINE_USERS } from '../graphql/query/getOnlineUsers';
 import {
-    SEND_MESSAGE,
-    UPDATE_MESSAGE,
-    DELETE_MESSAGE,
-} from '../graphql/mutation/messages';
-import { SET_USER_ONLINE, SET_USER_OFFLINE } from '../graphql/mutation/users';
-import {
     MESSAGE_ADDED_SUBSCRIPTION,
-    MESSAGE_UPDATED_SUBSCRIPTION,
     MESSAGE_DELETED_SUBSCRIPTION,
+    MESSAGE_UPDATED_SUBSCRIPTION,
     ONLINE_USERS_SUBSCRIPTION,
 } from '../graphql/subscription/subscriptions';
 import type {
@@ -106,7 +106,7 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
         fetchPolicy: 'cache-and-network',
     });
 
-    useQuery(GetMyConversation, {
+    const { loading: loading_GetMyConversation } = useQuery(GetMyConversation, {
         onCompleted: data => {
             if (data.getMyConversations) {
                 const conversations = data.getMyConversations;
@@ -226,7 +226,6 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
     const setCurrentConversationId = useCallback(
         (id: string | null) => {
             _setCurrentConversationId(id);
-            console.log('Setting current conversation ID:', id);
             if (id && !history[id]) {
                 setHistory(prevHistory => ({
                     ...prevHistory,
@@ -448,6 +447,9 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
                 isOnline,
                 onlineList,
                 changeConversationName,
+                state: {
+                    loading: loading_GetMyConversation,
+                },
             }}
         >
             {children}

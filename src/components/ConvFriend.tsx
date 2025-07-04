@@ -16,6 +16,7 @@ const ConvFriend = ({
     name,
     id,
     email,
+    avatar,
     icon,
     action,
     actionColor,
@@ -53,7 +54,7 @@ const ConvFriend = ({
                             size={10}
                             offset={5}
                         >
-                            <Avatar></Avatar>
+                            <Avatar src={avatar} />
                         </Indicator>
                         <Box>
                             <MorseText>

@@ -29,7 +29,7 @@ const GET_CONVERSATIONS = gql`
     }
 `;
 
-const FriendProfil = ({ name, id, email }: User) => {
+const FriendProfil = ({ name, id, email, avatar }: User) => {
     const { authStore } = useAuth();
     const n = useNavigate();
     const { isOnline } = useConversation();
@@ -151,7 +151,7 @@ const FriendProfil = ({ name, id, email }: User) => {
                             size={10}
                             offset={5}
                         >
-                            <Avatar></Avatar>
+                            <Avatar src={avatar} />
                         </Indicator>
                         <Box>
                             <MorseText>

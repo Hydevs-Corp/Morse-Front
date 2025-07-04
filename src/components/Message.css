@@ -1,0 +1,14 @@
+.message-container:not(:hover) .message-audio-button {
+    opacity: 0;
+}
+
+.message-container:hover .message-audio-button {
+    opacity: 1;
+}
+.message-container:not(:hover) .message-time {
+    opacity: 0;
+}
+
+.message-container:hover .message-time {
+    opacity: 1;
+}

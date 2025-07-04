@@ -23,6 +23,32 @@ import { useSettings } from '../providers/useSettings';
 import type { MessageProps } from '../scripts/types/types';
 import { useConversation } from './conversations/useConversation';
 import MorseText from './morse/MorseText';
+import './Message.css';
+
+const format = (date: Date) => {
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    if (diff > oneDay) {
+        const options: Intl.DateTimeFormatOptions = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        };
+        return new Intl.DateTimeFormat('en-US', options).format(date);
+    } else {
+        const options: Intl.DateTimeFormatOptions = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        };
+        return new Intl.DateTimeFormat('en-US', options).format(date);
+    }
+};
 
 const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
     const { handleUpdateMessage, handleDeleteMessage } = useConversation();
@@ -114,7 +140,10 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
     }
 
     return (
-        <Flex justify={!isCurrentUser ? 'flex-start' : 'flex-end'}>
+        <Flex
+            justify={!isCurrentUser ? 'flex-start' : 'flex-end'}
+            className="message-container"
+        >
             <Menu
                 disabled={!isCurrentUser}
                 withArrow
@@ -126,7 +155,25 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
                     direction={'column'}
                     align={!isCurrentUser ? 'flex-start' : 'flex-end'}
                     gap={4}
+                    pos={'relative'}
                 >
+                    <ActionIcon
+                        className="message-audio-button"
+                        style={{ zIndex: 1 }}
+                        pos={'absolute'}
+                        bottom={-8}
+                        right={isCurrentUser ? -8 : 'auto'}
+                        left={!isCurrentUser ? -8 : 'auto'}
+                        variant="filled"
+                        color="grape.9"
+                        w={8}
+                        h={8}
+                        p={0}
+                        size={'xs'}
+                        onClick={handleGenerateAudio}
+                    >
+                        <IconVolume width={16} height={16} />
+                    </ActionIcon>
                     {lastUserId === message.user.id && (
                         <Flex
                             direction={isCurrentUser ? 'row' : 'row-reverse'}
@@ -134,41 +181,44 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
                             align={'center'}
                             gap={4}
                         >
-                            <ActionIcon
-                                variant="light"
-                                color="grape"
-                                w={8}
-                                h={8}
-                                p={0}
-                                onClick={handleGenerateAudio}
-                            >
-                                <IconVolume width={16} height={16} />
-                            </ActionIcon>
                             <MorseText size="xs" c="gray">
                                 {message.user.name || message.user.email}
                             </MorseText>
                             <Avatar size={'sm'} src={message.user.avatar} />
                         </Flex>
                     )}
-                    <Menu.Target>
-                        <Card
-                            p={'xs'}
-                            w={'fit-content'}
-                            maw={'100%'}
-                            withBorder
-                            shadow="sm"
-                            bg={isCurrentUser ? 'gray.5' : 'dark'}
+                    <Flex
+                        direction={isCurrentUser ? 'row' : 'row-reverse'}
+                        align={'end'}
+                        gap={'xs'}
+                    >
+                        <MorseText
+                            className="message-time"
+                            size="xs"
+                            c={'dark.4'}
                         >
-                            <MorseText
-                                style={{
-                                    wordBreak: 'break-word',
-                                    whiteSpace: 'pre-wrap',
-                                }}
+                            {format(new Date(message.createdAt ?? new Date()))}
+                        </MorseText>
+                        <Menu.Target>
+                            <Card
+                                p={'xs'}
+                                w={'fit-content'}
+                                maw={'100%'}
+                                withBorder
+                                shadow="sm"
+                                bg={isCurrentUser ? 'gray.5' : 'dark'}
                             >
-                                {message.content}
-                            </MorseText>
-                        </Card>
-                    </Menu.Target>
+                                <MorseText
+                                    style={{
+                                        wordBreak: 'break-word',
+                                        whiteSpace: 'pre-wrap',
+                                    }}
+                                >
+                                    {message.content}
+                                </MorseText>
+                            </Card>
+                        </Menu.Target>
+                    </Flex>
                 </Flex>
                 <Menu.Dropdown>
                     <Menu.Item

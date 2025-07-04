@@ -5,7 +5,6 @@ import MorseText from './morse/MorseText';
 
 const ConvProfil = ({ name, id, email, avatar }: User) => {
     const { isOnline } = useConversation();
-    console.log('ConvProfil', { name, id, email, avatar });
     return (
         <Card p={'xs'} shadow="xs" w={'100%'}>
             <Flex

@@ -17,6 +17,9 @@ const defaultValue = {
     isOnline: () => false,
     onlineList: [],
     changeConversationName: () => {},
+    state: {
+        loading: false,
+    },
 };
 
 type ConversationContextType = {
@@ -31,6 +34,9 @@ type ConversationContextType = {
     isOnline: (id: string) => boolean;
     onlineList: OnlineListItem[];
     changeConversationName: (conversationId: string, newName: string) => void;
+    state: {
+        loading: boolean;
+    };
 };
 
 export const ConversationContext =
