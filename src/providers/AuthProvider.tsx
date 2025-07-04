@@ -73,7 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 avatar: res?.data?.signup?.user?.avatar || '',
             });
 
-            localStorage.setItem('token', res?.data?.login || '');
+            localStorage.setItem('token', res?.data?.signup?.token || '');
             modals.closeAll();
             return res;
         } catch (e) {
