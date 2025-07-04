@@ -163,6 +163,7 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
                         id: message.user.id.toString(),
                         name: message.user.name || message.user.email,
                         email: message.user.email,
+                        avatar: message.user.avatar,
                     },
                 };
                 handleReceiveMessage(messageData);

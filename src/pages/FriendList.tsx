@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client';
-import { ActionIcon, Flex, Tooltip } from '@mantine/core';
+import { ActionIcon, Box, Flex, Loader, Tooltip } from '@mantine/core';
 import { IconMessageCirclePlus } from '@tabler/icons-react';
 import FriendProfil from '../components/FriendProfil';
 import getUsers_QUERY from '../graphql/query/getUsers';
@@ -20,7 +20,7 @@ const FriendList = () => {
     }, [authStore?.id, refetch]);
 
     if (authStore?.id === '') {
-        return <div>Please log in to see your friends.</div>;
+        return <Box p={'md'}>Please log in to see your friends.</Box>;
     }
 
     const open = () => {
@@ -30,7 +30,12 @@ const FriendList = () => {
         });
     };
 
-    if (loading) return 'Loading...';
+    if (loading)
+        return (
+            <Flex p={'md'} justify="center" align="center">
+                <Loader size="xl" variant="dots" />
+            </Flex>
+        );
     if (error) return `Error! ${error.message}`;
     return (
         <Flex gap={'xs'} direction={'column'} p={'xs'}>

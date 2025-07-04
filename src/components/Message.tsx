@@ -18,7 +18,7 @@ import {
     IconVolume,
     IconX,
 } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSettings } from '../providers/useSettings';
 import type { MessageProps } from '../scripts/types/types';
 import { useConversation } from './conversations/useConversation';
@@ -51,7 +51,12 @@ const format = (date: Date) => {
 };
 
 const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
-    const { handleUpdateMessage, handleDeleteMessage } = useConversation();
+    const {
+        handleUpdateMessage,
+        handleDeleteMessage,
+        currentConversationId,
+        history,
+    } = useConversation();
     const handleCopyMessage = () => {
         navigator.clipboard.writeText(message.content);
     };
@@ -72,6 +77,16 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
             })
             .play();
     };
+
+    const avatar = useMemo(
+        () =>
+            currentConversationId
+                ? history[currentConversationId]?.participants?.find(
+                      p => p.id === message.user.id
+                  )?.avatar
+                : '',
+        []
+    );
 
     const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         if (e.shiftKey) {
@@ -184,7 +199,7 @@ const Message = ({ message, isCurrentUser, lastUserId }: MessageProps) => {
                             <MorseText size="xs" c="gray">
                                 {message.user.name || message.user.email}
                             </MorseText>
-                            <Avatar size={'sm'} src={message.user.avatar} />
+                            <Avatar size={'sm'} src={avatar} />
                         </Flex>
                     )}
                     <Flex

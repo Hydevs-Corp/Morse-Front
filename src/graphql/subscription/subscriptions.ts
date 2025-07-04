@@ -11,6 +11,7 @@ export const MESSAGE_ADDED_SUBSCRIPTION = gql`
                 id
                 name
                 email
+                avatar
             }
             conversation {
                 id
