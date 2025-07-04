@@ -16,6 +16,7 @@ const defaultValue = {
     handleDeleteMessage: () => {},
     isOnline: () => false,
     onlineList: [],
+    changeConversationName: () => {},
 };
 
 type ConversationContextType = {
@@ -29,6 +30,7 @@ type ConversationContextType = {
     handleDeleteMessage: (messageId: string) => void;
     isOnline: (id: string) => boolean;
     onlineList: OnlineListItem[];
+    changeConversationName: (conversationId: string, newName: string) => void;
 };
 
 export const ConversationContext =

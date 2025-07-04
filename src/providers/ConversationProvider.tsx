@@ -418,6 +418,22 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
         };
     }, [authStore.id, setUserOnline, setUserOffline]);
 
+    const changeConversationName = useCallback(
+        (conversationId: string, newName: string) => {
+            setConversationName(conversationId, newName);
+            if (currentConversationId === conversationId) {
+                setHistory(prevHistory => ({
+                    ...prevHistory,
+                    [conversationId]: {
+                        ...prevHistory[conversationId],
+                        name: newName,
+                    },
+                }));
+            }
+        },
+        [currentConversationId, setConversationName]
+    );
+
     return (
         <ConversationContext.Provider
             value={{
@@ -431,6 +447,7 @@ const ConversationProvider = ({ children }: { children: ReactNode }) => {
                 handleDeleteMessage,
                 isOnline,
                 onlineList,
+                changeConversationName,
             }}
         >
             {children}

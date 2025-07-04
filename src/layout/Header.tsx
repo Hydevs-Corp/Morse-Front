@@ -8,8 +8,12 @@ import { UPDATE_CONV_NAME } from '../graphql/mutation/conversations';
 import useConversationName from '../hook/UseConversationName';
 
 const Header = () => {
-    const { history, currentConversationId, setConversationName } =
-        useConversation();
+    const {
+        history,
+        currentConversationId,
+        setConversationName,
+        changeConversationName,
+    } = useConversation();
     const [editedConversationName, setEditedConversationName] = useState('');
 
     const getConversationName = useConversationName();
@@ -21,6 +25,10 @@ const Header = () => {
                 const updatedConv = data.updateConversation;
                 if (updatedConv && currentConversationId) {
                     setConversationName(
+                        currentConversationId,
+                        updatedConv.name
+                    );
+                    changeConversationName(
                         currentConversationId,
                         updatedConv.name
                     );
