@@ -1,3 +1,13 @@
+# Quick Start
+
+If you want to start quickly, navigate to the backend repository (`morse-back`) and run the following command:
+
+```bash
+docker compose up
+```
+
+---
+
 # 📡 Morse Front
 
 Une application web moderne de chat en temps réel avec traduction automatique en code Morse, développée avec React et TypeScript.
